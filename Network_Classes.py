@@ -130,7 +130,7 @@ class Network:
 class Medium:
     def __init__(self):
         self.data_stack = []  # [Data, next_node], list
-        self.delay_status = np.array([])  # [Delay time], array
+        self.delay_status = []  # [Delay time], list
         self.remaining_time = []
 
     def update(self, close_event_time):
@@ -144,6 +144,6 @@ class Medium:
                 self.remaining_time = self.delay_status[0]
             else:
                 self.remaining_time = []
-        else:
+        elif self.data_stack != []:
             self.remaining_time -= close_event_time
 
