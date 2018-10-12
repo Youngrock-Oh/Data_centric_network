@@ -93,8 +93,7 @@ class Network:
         sending_index = [0, 0]
         for l in range(layer_num):
             for i in range(len(self.locations[l])):
-                if self.network_nodes[l][i].remaining_time != [] and \
-                    self.network_nodes[l][i].remaining_time < close_service_time:
+                if self.network_nodes[l][i].remaining_time != [] and self.network_nodes[l][i].remaining_time <= close_service_time:
                     close_service_time = self.network_nodes[l][i].remaining_time
                     sending_index = [l, i]
         if self.medium.data_stack != [] and self.medium.data_stack[0][2] < close_service_time:

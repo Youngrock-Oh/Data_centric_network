@@ -9,7 +9,7 @@ import Network_Classes as NC
 net_region_width = 1.0  # km
 net_region_height = 1.0  # km
 layer_num = 4
-node_num = [2, 2, 2, 1]
+node_num = [3, 5, 3, 1]
 locations = [[] for i in range(layer_num)]
 
 # rate parameters
@@ -24,7 +24,7 @@ for i in range(1, layer_num):
 
 # data type distribution and layer_dic
 data_type_dist = (0.2, 0.35, 0.3, 0.1, 0.05)
-layer_dic = {0: [0, 1, 2, 3], 1: [0, 1, 2], 2: [0, 1], 3: [0, 2, 3], 4: [0, 3]}
+layer_dic = {0: [0,1], 1: [0,1], 2: [0,1], 3: [0,1], 4: [0,1]}
 
 # routing probability A
 A = [[] for i in range(layer_num)]
