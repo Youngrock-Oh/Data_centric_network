@@ -42,7 +42,6 @@ class Node:
     def transfer_to(self, medium, sending_data, next_node):
         medium.data_stack.append([sending_data, next_node])  # Add the data to medium
         medium.delay_status.append(delay(self, next_node))  # Add the delay of the data to medium
-        medium.remaining_time = min(medium.delay_status)  # Update medium remaining_time
         self.data_stack.remove(sending_data)
         if self.source:  # Source transfers the data and generates new data
             new_data_type = choice(len(self.data_type_dist), 1, True, self.data_type_dist)
