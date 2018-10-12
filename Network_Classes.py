@@ -3,10 +3,10 @@ from numpy.random import exponential
 from numpy.random import choice
 import numpy as np
 
-c = 3e10
-layer_dic = {1: [0, 1, 2, 3], 2: [0, 1, 2], 3: [0, 1]}
-Num_completed_data = 0
 
+# example for layer_dic: layer_dic = {1: [0, 1, 2, 3], 2: [0, 1, 2], 3: [0, 1]}
+Num_completed_data = 0
+c = 3e5 # km / sec
 
 # Return path delay between two nodes
 def delay(node_1, node_2):
@@ -15,7 +15,7 @@ def delay(node_1, node_2):
     return sqrt(x * x + y * y) / c
 
 
-def Complete():
+def complete():
     global Num_completed_data
     Num_completed_data += 1
 
@@ -41,12 +41,12 @@ class Node:
         medium.data_stack.append([sending_data, next_node])  # Add the data to medium
         medium.delay_status.append(delay(self, next_node))  # Add the delay of the data to medium
         medium.remaining_time = min(medium.delay_status)  # Update medium remaining_time
-        self.remove(sending_data)
-        if self.source: # Source transfers the data and generates new data
+        self.data_stack.remove(sending_data)
+        if self.source:  # Source transfers the data and generates new data
             new_data_type = choice(len(self.data_type_dist), 1, self.data_type_dist)
             new_data = Data(new_data_type)
             self.add_data(new_data)
-        else: # Server just transfers the data
+        else:  # Server just transfers the data
             if self.data_stack !=[]:
                 self.remaining_time = exponential(1 / self.rate)
             else:
