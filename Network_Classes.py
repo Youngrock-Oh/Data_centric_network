@@ -4,7 +4,8 @@ from numpy.random import choice
 import numpy as np
 
 
-# example for layer_dic: layer_dic = {1: [0, 1, 2, 3], 2: [0, 1, 2], 3: [0, 1]}
+# example for layer_dic:
+layer_dic = {0: [0, 1, 2, 3], 1: [0, 1, 2], 2: [0, 1], 3: [0, 2, 3], 4: [0, 3]}
 Num_completed_data = 0
 c = 3e5 # km / sec
 
@@ -43,7 +44,7 @@ class Node:
         medium.remaining_time = min(medium.delay_status)  # Update medium remaining_time
         self.data_stack.remove(sending_data)
         if self.source:  # Source transfers the data and generates new data
-            new_data_type = choice(len(self.data_type_dist), 1, self.data_type_dist)
+            new_data_type = choice(len(self.data_type_dist), 1, True, self.data_type_dist)
             new_data = Data(new_data_type)
             self.add_data(new_data)
         else:  # Server just transfers the data
@@ -79,7 +80,7 @@ class Network:
             for i in range(len(locations[l])):
                 new_node = Node(locations[l][i], rates[l][i], A[l][i], l, l == 0, data_type_dist)
                 if l == 0:
-                    new_data_type = choice(len(data_type_dist), 1, data_type_dist)
+                    new_data_type = choice(len(data_type_dist), 1, True, data_type_dist)
                     new_data = Data(new_data_type)
                     new_node.add_data(new_data)
                 self.network_nodes[l].append(new_node)
@@ -107,7 +108,7 @@ class Network:
                 elif sending_node.remaining_time == close_service_time:
                     sending_data = sending_node.data_stack[0]
                     if l < max(sending_data.need_layers): # the data must be transferred to the next layer
-                        next_index = choice(len(sending_node.routing_P), 1, sending_node.routing_P)
+                        next_index = choice(len(sending_node.routing_P), 1, True, sending_node.routing_P)
                         next_node = self.network_nodes[l + 1][next_index]
                         sending_node.transfer_to(self.medium, sending_data, next_node)
                     else: # Processing the data is over
