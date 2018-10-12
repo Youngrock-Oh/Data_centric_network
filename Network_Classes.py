@@ -4,8 +4,7 @@ from numpy.random import choice
 import numpy as np
 
 
-# example for layer_dic:
-layer_dic = {0: [0, 1, 2, 3], 1: [0, 1, 2], 2: [0, 1], 3: [0, 2, 3], 4: [0, 3]}
+# example for layer_dic: layer_dic = {0: [0, 1, 2, 3], 1: [0, 1, 2], 2: [0, 1], 3: [0, 2, 3], 4: [0, 3]}
 Num_completed_data = 0
 c = 3e5 # km / sec
 
@@ -19,16 +18,17 @@ def delay(node_1, node_2):
 def complete():
     global Num_completed_data
     Num_completed_data += 1
+    print("Completed!")
 
 
 # Class "Data": type, need_layers, cur_node, next_node
 class Data:
-    def __init__(self, type):
+    def __init__(self, type, layer_dic):
         self.type = type
         self.need_layers = layer_dic.get(type)
 
 class Node:
-    def __init__(self, loc, rate, routing_P, cur_layer, source, data_type_dist):
+    def __init__(self, loc, rate, routing_P, cur_layer, source, data_type_dist, layer_dic):
         self.loc = loc
         self.rate = rate
         self.remaining_time = []
@@ -37,6 +37,7 @@ class Node:
         self.cur_layer = cur_layer
         self.source = source
         self.data_type_dist = data_type_dist
+        self.layer_dic = layer_dic
 
     def transfer_to(self, medium, sending_data, next_node):
         medium.data_stack.append([sending_data, next_node])  # Add the data to medium
@@ -45,7 +46,8 @@ class Node:
         self.data_stack.remove(sending_data)
         if self.source:  # Source transfers the data and generates new data
             new_data_type = choice(len(self.data_type_dist), 1, True, self.data_type_dist)
-            new_data = Data(new_data_type)
+            new_data_type = int(new_data_type)
+            new_data = Data(new_data_type, self.layer_dic)
             self.add_data(new_data)
         else:  # Server just transfers the data
             if self.data_stack !=[]:
@@ -78,10 +80,11 @@ class Network:
             self.network_nodes.append([])
         for l in range(layer_num):
             for i in range(len(locations[l])):
-                new_node = Node(locations[l][i], rates[l][i], A[l][i], l, l == 0, data_type_dist)
+                new_node = Node(locations[l][i], rates[l][i], A[l][i], l, l == 0, data_type_dist, layer_dic)
                 if l == 0:
                     new_data_type = choice(len(data_type_dist), 1, True, data_type_dist)
-                    new_data = Data(new_data_type)
+                    new_data_type = int(new_data_type)
+                    new_data = Data(new_data_type, layer_dic)
                     new_node.add_data(new_data)
                 self.network_nodes[l].append(new_node)
         self.medium = Medium()
@@ -109,10 +112,11 @@ class Network:
                     sending_data = sending_node.data_stack[0]
                     if l < max(sending_data.need_layers): # the data must be transferred to the next layer
                         next_index = choice(len(sending_node.routing_P), 1, True, sending_node.routing_P)
+                        next_index = int(next_index)
                         next_node = self.network_nodes[l + 1][next_index]
                         sending_node.transfer_to(self.medium, sending_data, next_node)
                     else: # Processing the data is over
-                        Complete()
+                        complete()
                         del sending_node.data_stack[0]
                         if sending_node.data_stack != []:
                             sending_node.remaining_time = exponential(1 / sending_node.rate)
