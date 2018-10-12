@@ -40,8 +40,7 @@ class Node:
         self.layer_dic = layer_dic
 
     def transfer_to(self, medium, sending_data, next_node):
-        medium.data_stack.append([sending_data, next_node])  # Add the data to medium
-        medium.delay_status.append(delay(self, next_node))  # Add the delay of the data to medium
+        medium.data_stack.append([sending_data, next_node, delay(self, next_node)])  # Add the data to medium
         self.data_stack.remove(sending_data)
         if self.source:  # Source transfers the data and generates new data
             new_data_type = choice(len(self.data_type_dist), 1, True, self.data_type_dist)
@@ -61,7 +60,7 @@ class Node:
         elif self.data_stack == []:
             self.data_stack.append(data)
             self.remaining_time = exponential(1 / self.rate)
-        else: # Add the data to data_stack
+        else:  # Add the data to data_stack
             self.data_stack.append(data)
 
 
@@ -90,59 +89,65 @@ class Network:
 
     def update_time(self):
         layer_num = len(self.locations)
-        close_service_time = self.network_nodes[0][0].remaining_time # initialization
+        close_service_time = self.network_nodes[0][0].remaining_time  # initialization
+        sending_index = [0, 0]
         for l in range(layer_num):
             for i in range(len(self.locations[l])):
                 if self.network_nodes[l][i].remaining_time != [] and \
                     self.network_nodes[l][i].remaining_time < close_service_time:
                     close_service_time = self.network_nodes[l][i].remaining_time
-        if self.medium.remaining_time != [] and self.medium.remaining_time < close_service_time:
-            close_service_time = self.medium.remaining_time
-        return close_service_time
+                    sending_index = [l, i]
+        if self.medium.data_stack != [] and self.medium.data_stack[0][2] < close_service_time:
+            close_service_time = self.medium.data_stack[0][2]
+            sending_index = 'medium'
+        return [close_service_time, sending_index]
 
-    def update(self, close_service_time):
+    def update(self, close_service_time, sending_index):
         layer_num = len(self.locations)
-        for l in range(layer_num):
-            for i in range(len(self.locations[l])):
-                sending_node = self.network_nodes[l][i]
-                if sending_node.remaining_time == []:
-                    pass
-                elif sending_node.remaining_time == close_service_time:
-                    sending_data = sending_node.data_stack[0]
-                    if l < max(sending_data.need_layers): # the data must be transferred to the next layer
-                        next_index = choice(len(sending_node.routing_P), 1, True, sending_node.routing_P)
-                        next_index = int(next_index)
-                        next_node = self.network_nodes[l + 1][next_index]
-                        sending_node.transfer_to(self.medium, sending_data, next_node)
-                    else: # Processing the data is over
-                        complete()
-                        del sending_node.data_stack[0]
+        if sending_index == 'medium':
+            for l in range(layer_num):
+                for i in range(len(self.locations[l])):
+                    sending_node = self.network_nodes[l][i]
+                    if sending_node.data_stack != []:
+                        sending_node.remaining_time -= close_service_time
+            self.medium.update(close_service_time)
+        else:
+            self.medium.update(close_service_time)
+            for l in range(layer_num):
+                for i in range(len(self.locations[l])):
+                    sending_node = self.network_nodes[l][i]
+                    if l == sending_index[0] and i == sending_index[1]:
+                        sending_data = sending_node.data_stack[0]
+                        if l < max(sending_data.need_layers):  # the data must be transferred to the next layer
+                            next_index = choice(len(sending_node.routing_P), 1, True, sending_node.routing_P)
+                            next_index = int(next_index)
+                            next_node = self.network_nodes[l + 1][next_index]
+                            sending_node.transfer_to(self.medium, sending_data, next_node)
+                        else:  # Processing the data is over
+                            complete()
+                            del sending_node.data_stack[0]
+                            if sending_node.data_stack == []:
+                                sending_node.remaining_time = []
+                            elif sending_data.need_layers.count(l) > 0:
+                                sending_node.remaining_time = exponential(1 / sending_node.rate)
+                            else:
+                                sending_node.remaining_time = 0
+                    else:
                         if sending_node.data_stack != []:
-                            sending_node.remaining_time = exponential(1 / sending_node.rate)
-                        else:
-                            sending_node.remaining_time = []
-                else:
-                    sending_node.remaining_time -= close_service_time
-        self.medium.update(close_service_time)
-
+                            sending_node.remaining_time -= close_service_time
 # Class "Medium": corresponding to the transmission events
 class Medium:
     def __init__(self):
-        self.data_stack = []  # [Data, next_node], list
-        self.delay_status = []  # [Delay time], list
-        self.remaining_time = []
-
+        self.data_stack = []  # [Data, next_node, delay], list
     def update(self, close_event_time):
-        if self.remaining_time == close_event_time:  # Handover to next layer
-            sending_data = self.data_stack[0][0]  # Find data to transfer
-            next_node = self.data_stack[0][1]
-            next_node.add_data(sending_data)  # Add the data to the next_node
-            del self.data_stack[0]
-            del self.delay_status[0]  # Remove the transferred data in the queue stack
-            if self.data_stack != []:
-                self.remaining_time = self.delay_status[0]
-            else:
-                self.remaining_time = []
-        elif self.data_stack != []:
-            self.remaining_time -= close_event_time
+        if self.data_stack == []:
+            pass
+        else:
+            if self.data_stack[0][2] == close_event_time:  # Handover to next layer
+                sending_data = self.data_stack[0][0]  # Find data to transfer
+                next_node = self.data_stack[0][1]
+                next_node.add_data(sending_data)  # Add the data to the next_node
+                del self.data_stack[0]
+            elif self.data_stack != []:
+                self.data_stack[0][2] -= close_event_time
 
