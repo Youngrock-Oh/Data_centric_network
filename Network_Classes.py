@@ -6,7 +6,9 @@ import numpy as np
 
 # example for layer_dic: layer_dic = {0: [0, 1, 2, 3], 1: [0, 1, 2], 2: [0, 1], 3: [0, 2, 3], 4: [0, 3]}
 Num_completed_data = 0
-c = 3e5 # km / sec
+Net_completion_time = 0
+c = 3e5  # km / sec
+
 
 # Return path delay between two nodes
 def delay(node_1, node_2):
@@ -15,25 +17,32 @@ def delay(node_1, node_2):
     return sqrt(x * x + y * y) / c
 
 
-def complete():
+def complete(data):
     global Num_completed_data
+    global Net_completion_time
     Num_completed_data += 1
+    Net_completion_time += data.spending_time
     print("Completed!")
 
 
 # Class "Data": type, need_layers, cur_node, next_node
 class Data:
-    def __init__(self, type, layer_dic):
-        self.type = type
-        self.need_layers = layer_dic.get(type)
+    def __init__(self, data_type, layer_dic):
+        """
+        data_type: (int) data type
+        layer_dic: (dict) required layer index
+        """
+        self.type = data_type
+        self.need_layers = layer_dic.get(data_type)
         self.spending_time = 0
 
+
 class Node:
-    def __init__(self, loc, rate, routing_P, cur_layer, source, data_type_dist, layer_dic):
+    def __init__(self, loc, rate, routing_p, cur_layer, source, data_type_dist, layer_dic):
         self.loc = loc
         self.rate = rate
         self.remaining_time = []
-        self.routing_P = routing_P
+        self.routing_P = routing_p
         self.data_stack = []
         self.cur_layer = cur_layer
         self.source = source
@@ -135,7 +144,7 @@ class Network:
                             next_node = self.network_nodes[l + 1][next_index]
                             sending_node.transfer_to(self.medium, sending_data, next_node)
                         else:  # Processing the data is over
-                            complete()
+                            complete(sending_data)
                             del sending_node.data_stack[0]
                             if sending_node.data_stack == []:
                                 sending_node.remaining_time = []
