@@ -24,6 +24,8 @@ def complete(data):
     Net_completion_time += data.spending_time
     print("Completed!")
 
+def throughput():
+    return Net_completion_time/Num_completed_data
 
 # Class "Data": type, need_layers, cur_node, next_node
 class Data:
