@@ -13,8 +13,8 @@ node_num = [3, 5, 3, 1]
 locations = [[] for i in range(layer_num)]
 
 # rate parameters
-rates = [[]]*layer_num
-avg_rate_layer = [[]] * layer_num
+rates = [[] for i in range(layer_num)]
+avg_rate_layer = [[] for i in range(layer_num)]
 avg_rate_layer[0] = 10.0
 total_arrival_rate = node_num[0] * avg_rate_layer[0]
 rate_margin = 0.8
