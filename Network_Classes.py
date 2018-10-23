@@ -26,6 +26,7 @@ class Data:
     def __init__(self, type, layer_dic):
         self.type = type
         self.need_layers = layer_dic.get(type)
+        self.spending_time = 0
 
 class Node:
     def __init__(self, loc, rate, routing_P, cur_layer, source, data_type_dist, layer_dic):
@@ -38,6 +39,12 @@ class Node:
         self.source = source
         self.data_type_dist = data_type_dist
         self.layer_dic = layer_dic
+
+    def spent_time(self, close_service_time):
+        if self.data_stack != []:
+            num_data = len(self.data_stack)
+            for i in range(num_data):
+                self.data_stack[i].spending_time += close_service_time
 
     def transfer_to(self, medium, sending_data, next_node):
         medium.data_stack.append([sending_data, next_node]) # Add the data to medium
@@ -112,12 +119,14 @@ class Network:
                     sending_node = self.network_nodes[l][i]
                     if sending_node.data_stack != []:
                         sending_node.remaining_time -= close_service_time
+                        sending_node.spent_time(close_service_time)
             self.medium.update(close_service_time)
         else:
             self.medium.update(close_service_time)
             for l in range(layer_num):
                 for i in range(len(self.locations[l])):
                     sending_node = self.network_nodes[l][i]
+                    sending_node.spent_time(close_service_time)
                     if l == sending_index[0] and i == sending_index[1]:
                         sending_data = sending_node.data_stack[0]
                         if l < max(sending_data.need_layers):  # the data must be transferred to the next layer
@@ -145,9 +154,8 @@ class Medium:
         self.remaining_time = []
         # Assume that a node transmits multiple packets simultaneously -> well matched to our mathematical model
     def update(self, close_event_time):
-        if self.data_stack == []:
-            pass
-        else:
+        if self.data_stack != []:
+            self.spent_time(close_event_time)
             if self.remaining_time == close_event_time:  # Handover to next layer
                 sending_data = self.data_stack[np.argmin(self.delay_time)][0]  # Find data to transfer
                 next_node = self.data_stack[np.argmin(self.delay_time)][1]
@@ -164,4 +172,9 @@ class Medium:
             else:
                 self.remaining_time = []
 
+    def spent_time(self, close_service_time):
+        if self.data_stack != []:
+            num_data = len(self.data_stack)
+            for i in range(num_data):
+                self.data_stack[i][0].spending_time += close_service_time
 
