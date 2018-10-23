@@ -40,7 +40,9 @@ class Node:
         self.layer_dic = layer_dic
 
     def transfer_to(self, medium, sending_data, next_node):
-        medium.data_stack.append([sending_data, next_node, delay(self, next_node)])  # Add the data to medium
+        medium.data_stack.append([sending_data, next_node]) # Add the data to medium
+        medium.delay_time.append(delay(self, next_node)) # Add delay in the delay queue
+        medium.remaining_time = min(medium.delay_time)
         self.data_stack.remove(sending_data)
         if self.source:  # Source transfers the data and generates new data
             new_data_type = choice(len(self.data_type_dist), 1, True, self.data_type_dist)
@@ -97,8 +99,8 @@ class Network:
                     self.network_nodes[l][i].remaining_time <= close_service_time:
                     close_service_time = self.network_nodes[l][i].remaining_time
                     sending_index = [l, i]
-        if self.medium.data_stack != [] and self.medium.data_stack[0][2] < close_service_time:
-            close_service_time = self.medium.data_stack[0][2]
+        if self.medium.data_stack != [] and self.medium.remaining_time < close_service_time:
+            close_service_time = self.medium.remaining_time
             sending_index = 'medium'
         return [close_service_time, sending_index]
 
@@ -120,7 +122,7 @@ class Network:
                         sending_data = sending_node.data_stack[0]
                         if l < max(sending_data.need_layers):  # the data must be transferred to the next layer
                             next_index = choice(len(sending_node.routing_P), 1, True, sending_node.routing_P)
-                            next_index = int(next_index)
+                            next_index = int(next_index) # convert numpy.ndarray to int
                             next_node = self.network_nodes[l + 1][next_index]
                             sending_node.transfer_to(self.medium, sending_data, next_node)
                         else:  # Processing the data is over
@@ -128,7 +130,7 @@ class Network:
                             del sending_node.data_stack[0]
                             if sending_node.data_stack == []:
                                 sending_node.remaining_time = []
-                            elif sending_data.need_layers.count(l) > 0:
+                            elif sending_node.data_stack[0].need_layers.count(l) > 0:
                                 sending_node.remaining_time = exponential(1 / sending_node.rate)
                             else:
                                 sending_node.remaining_time = 0
@@ -138,16 +140,28 @@ class Network:
 # Class "Medium": corresponding to the transmission events
 class Medium:
     def __init__(self):
-        self.data_stack = []  # [Data, next_node, delay], list
+        self.data_stack = []  # [Data, next_node], list
+        self.delay_time = [] # delay time
+        self.remaining_time = []
+        # Assume that a node transmits multiple packets simultaneously -> well matched to our mathematical model
     def update(self, close_event_time):
         if self.data_stack == []:
             pass
         else:
-            if self.data_stack[0][2] == close_event_time:  # Handover to next layer
-                sending_data = self.data_stack[0][0]  # Find data to transfer
-                next_node = self.data_stack[0][1]
+            if self.remaining_time == close_event_time:  # Handover to next layer
+                sending_data = self.data_stack[np.argmin(self.delay_time)][0]  # Find data to transfer
+                next_node = self.data_stack[np.argmin(self.delay_time)][1]
                 next_node.add_data(sending_data)  # Add the data to the next_node
-                del self.data_stack[0]
-            elif self.data_stack != []:
-                self.data_stack[0][2] -= close_event_time
+                del self.data_stack[np.argmin(self.delay_time)]
+                del self.delay_time[np.argmin(self.delay_time)]
+            else:
+                temp = np.array(self.delay_time)
+                temp -= close_event_time
+                self.delay_time = list(temp)
+
+            if self.data_stack != []:
+                self.remaining_time = min(self.delay_time)
+            else:
+                self.remaining_time = []
+
 
