@@ -1,7 +1,6 @@
-money = 2000
-card = 1
-if money >= 3000 and \
-card == 1:
-    print("택시를 타고 가라")
-else:
-    print("걸어가라")
+import time
+start_time = time.time()
+
+print(3**20)
+
+print("--- %s seconds ---" % (time.time() - start_time))

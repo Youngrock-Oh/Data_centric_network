@@ -163,12 +163,11 @@ class Medium:
                 next_node.add_data(sending_data)  # Add the data to the next_node
                 del self.data_stack[np.argmin(self.delay_time)]
                 del self.delay_time[np.argmin(self.delay_time)]
-            else:
+
+            if self.data_stack != []:
                 temp = np.array(self.delay_time)
                 temp -= close_event_time
                 self.delay_time = list(temp)
-
-            if self.data_stack != []:
                 self.remaining_time = min(self.delay_time)
             else:
                 self.remaining_time = []
