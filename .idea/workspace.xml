@@ -16,14 +16,18 @@
             <file pinned="false" current-in-tab="true">
               <entry file="file://$PROJECT_DIR$/Analytic_res.py">
                 <provider selected="true" editor-type-id="text-editor">
-                  <state relative-caret-position="378">
-                    <caret line="99" column="52" selection-start-line="99" selection-start-column="52" selection-end-line="99" selection-end-column="52" />
+                  <state relative-caret-position="168">
+                    <caret line="14" column="53" selection-start-line="14" selection-start-column="53" selection-end-line="14" selection-end-column="53" />
                     <folding>
                       <element signature="e#175#261#0" />
                       <element signature="e#321#673#0" />
                       <element signature="e#772#1431#0" />
                       <element signature="e#1545#3077#0" />
-                      <marker date="1540353244658" expanded="true" signature="3130:3740" ph="..." />
+                      <element signature="e#1545#1939#1" />
+                      <element signature="e#2944#3183#1" />
+                      <element signature="e#3462#5746#0" />
+                      <element signature="e#5611#24048#0" />
+                      <marker date="1540375273879" expanded="false" signature="3065:3641" ph="..." />
                     </folding>
                   </state>
                 </provider>
@@ -49,38 +53,50 @@
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="Network_Simulation" value="1" />
-          <entry key="py" value="27" />
+          <entry key="py" value="28" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="Python" value="28" />
+          <entry key="Python" value="29" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="Python Console" value="1242" />
+          <entry key="Python Console" value="1301" />
           <entry key="dummy" value="21" />
-          <entry key="py" value="14381" />
+          <entry key="py" value="14554" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="PLAIN_TEXT" value="21" />
-          <entry key="Python" value="15623" />
+          <entry key="Python" value="15855" />
         </counts>
       </usages-collector>
     </session>
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Network_Simulation.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="253">
-              <caret line="57" selection-start-line="57" selection-end-line="66" selection-end-column="61" />
+            <state relative-caret-position="903">
+              <caret line="43" column="14" selection-start-line="43" selection-start-column="14" selection-end-line="43" selection-end-column="14" />
               <folding>
                 <element signature="e#1#19#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Network_Classes.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="252">
+              <caret line="30" column="23" lean-forward="true" selection-start-line="30" selection-start-column="23" selection-end-line="30" selection-end-column="23" />
+              <folding>
+                <element signature="e#0#21#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -132,8 +148,8 @@
         <option value="$PROJECT_DIR$/anallytic_res.py" />
         <option value="$PROJECT_DIR$/analytic_res.py" />
         <option value="$PROJECT_DIR$/Network_Classes.py" />
-        <option value="$PROJECT_DIR$/Network_Simulation.py" />
         <option value="$PROJECT_DIR$/Analytic_res.py" />
+        <option value="$PROJECT_DIR$/Network_Simulation.py" />
       </list>
     </option>
   </component>
@@ -380,13 +396,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Network_Classes.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="73" column="14" lean-forward="true" selection-start-line="73" selection-start-column="14" selection-end-line="73" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Scratch_code.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="105">
@@ -403,8 +412,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Network_Simulation.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="253">
-          <caret line="57" selection-start-line="57" selection-end-line="66" selection-end-column="61" />
+        <state relative-caret-position="903">
+          <caret line="43" column="14" selection-start-line="43" selection-start-column="14" selection-end-line="43" selection-end-column="14" />
           <folding>
             <element signature="e#1#19#0" expanded="true" />
           </folding>
@@ -413,14 +422,28 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Analytic_res.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="378">
-          <caret line="99" column="52" selection-start-line="99" selection-start-column="52" selection-end-line="99" selection-end-column="52" />
+        <state relative-caret-position="168">
+          <caret line="14" column="53" selection-start-line="14" selection-start-column="53" selection-end-line="14" selection-end-column="53" />
           <folding>
             <element signature="e#175#261#0" />
             <element signature="e#321#673#0" />
             <element signature="e#772#1431#0" />
             <element signature="e#1545#3077#0" />
-            <marker date="1540353244658" expanded="true" signature="3130:3740" ph="..." />
+            <element signature="e#1545#1939#1" />
+            <element signature="e#2944#3183#1" />
+            <element signature="e#3462#5746#0" />
+            <element signature="e#5611#24048#0" />
+            <marker date="1540375273879" expanded="false" signature="3065:3641" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Network_Classes.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="252">
+          <caret line="30" column="23" lean-forward="true" selection-start-line="30" selection-start-column="23" selection-end-line="30" selection-end-column="23" />
+          <folding>
+            <element signature="e#0#21#0" expanded="true" />
           </folding>
         </state>
       </provider>
