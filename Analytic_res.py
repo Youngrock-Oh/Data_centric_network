@@ -83,6 +83,26 @@ def uniform_random_network(net_region_width, net_region_height, layer_num, node_
             rates[i].append(rate)
     return [locations, rates, A]
 
+def no_delay_optimal(arrival_rates, service_rates):
+    n1 = len(arrival_rates)
+    n2 = len(service_rates)
+    num = 0
+    for j in range(n2):
+        num += sqrt(service_rates[j])
+    denom = sum(service_rates) - sum(arrival_rates)
+    K = pow(num / denom, 2)
+    lambda_hat = np.zeros((n2, 1))
+    for j in range(n2):
+        lambda_hat[j] = service_rates[j] - sqrt(service_rates[j]/K)
+    service_time = 0
+    for j in range(n2):
+        service_time += lambda_hat[j] / (service_rates[j] - lambda_hat[j])
+    service_time = service_time / sum(arrival_rates)
+    result = {'lambda_hat': lambda_hat, 'Mean_completion_time': service_time}
+    return result
+
+
+
 # Written by KJ
 def grad_projected(arrival_rates, service_rates, delta, initial_a):
     n1 = len(arrival_rates)
@@ -561,6 +581,6 @@ def barrier_method(arrival_rates, service_rates, delta, initial_a, eps1 = 1e-7, 
     for i in range(Ml):
         for j in range(Nl):
             D[i, j] = mus[j] / pow(mus[j] - lambda_hats[j], 2) + deltas[i, j]
-    print(D)
+    #print(D)
     result = {'A': A, 'lambda_hats': lambda_hats, 'Mean_completion_time': service_time}
     return result

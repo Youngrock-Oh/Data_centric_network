@@ -52,3 +52,16 @@ print('Gradient method: ', res_grad['Mean_completion_time'], res_grad['A'])
 print('Barrier method: ', res_bar['Mean_completion_time'], res_bar['A'])
 print('Simulation time: ', simulation_service_time)
 print("--- %s seconds ---" % (time.time() - start_time))
+
+# Check KJ's condition
+
+arrival_rates = np.array([1,2])
+service_rates = np.array([3,4])
+#delta = np.array([[0.1, 0.14],[0.15, 0.2]])
+delta = np.zeros((2,2))
+initial_a = np.array([[1/2, 1/2], [1/2, 1/2]])
+res_1 = ar.grad_projected(arrival_rates, service_rates, delta, initial_a)
+res_2 = ar.barrier_method(arrival_rates, service_rates, delta, initial_a)
+res_3 = ar.no_delay_optimal(arrival_rates, service_rates)
+test_1 = np.matmul(arrival_rates, res_1['A'] - service_rates)
+test_2 = np.matmul(arrival_rates, res_2['A'] - service_rates)
