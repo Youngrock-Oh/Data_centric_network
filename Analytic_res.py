@@ -16,7 +16,7 @@ def delay_return(locations_source, locations_server):
     '''
 	Inputs: two layers location coordinates (array)
 	Outputs: two layers delay matrix (array)
-	'''	
+	'''
 
     m = len(locations_source)
     n = len(locations_server)
