@@ -39,7 +39,7 @@ class Node:
         self.remaining_time = []
 
     def spent_time(self, close_service_time):
-        if self.data_stack != []:
+        if self.data_stack:
             num_data = len(self.data_stack)
             for i in range(num_data):
                 self.data_stack[i].spending_time += close_service_time
@@ -100,11 +100,13 @@ class Network:
         sending_index = [0, 0]
         for l in range(layer_num):
             for i in range(len(self.rates[l])):
-                if self.network_nodes[l][i].remaining_time != [] and \
+                if self.network_nodes[l][i].remaining_time and self.network_nodes[l][i].remaining_time < 0:
+                    print('Error!')
+                if self.network_nodes[l][i].data_stack and \
                         self.network_nodes[l][i].remaining_time < close_service_time:
                     close_service_time = self.network_nodes[l][i].remaining_time
                     sending_index = [l, i]
-        if self.medium.data_stack != [] and self.medium.remaining_time < close_service_time:
+        if self.medium.data_stack and self.medium.remaining_time < close_service_time:
             close_service_time = self.medium.remaining_time
             sending_index = 'medium'
         return [close_service_time, sending_index]
