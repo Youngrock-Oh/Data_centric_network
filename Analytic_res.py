@@ -40,13 +40,15 @@ def analytic_avg_delay_two_layers(arrival_rates, service_rates, delta, A):
     lambda_hat = np.matmul(arrival_rates, A)
     res_sum = 0
     for i in range(m):
-        res_sum += np.dot(A[i, :], 1 / (service_rates - lambda_hat.T) + delta[i, :]) * arrival_rates[i] / sum(arrival_rates)
-    return res_sum
+        res_sum += np.dot(A[i, :], 1 / (service_rates - lambda_hat) + delta[i, :]) * arrival_rates[i]
+    return res_sum / sum(arrival_rates)
 
-def analytic_avg_delay(rates, delta, A):
+def analytic_avg_delay(rates, delta, A, data_type_dist, layer_dic):
     '''
     	rates: [array (rates in layer 0), array (rates in layer 0), ...]
     	A: routing probabilities [array (routing probabilites in layer 0), array (routing probabilites in layer 0), ...]
+    	data_type_dist: [p1, p2, ...] data type distribution
+    	layer_dic: {0: [l_01, l_02, ...], 1: [l_11, 1_12, ...]} required layers for each data type
     	Output:
     	expected service time including propagation delay
     '''

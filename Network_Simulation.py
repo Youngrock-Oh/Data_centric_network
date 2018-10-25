@@ -24,12 +24,11 @@ res_grad = ar.grad_projected(arrival_rates, service_rates, delta, initial_a)
 res_bar = ar.barrier_method(arrival_rates, service_rates, delta, initial_a)
 A = res_bar['A']
 A_2 = [A, np.zeros((4, 1))]
-#
 # data type distribution and layer_dic
 data_type_dist = [1]
 layer_dic = {0: [0, 1]}
-
-cur_network = NC.Network(rates, data_type_dist, layer_dic, delta_2, A_2)
+vol_dec = np.array([0.5, 1])
+cur_network = NC.Network(rates, data_type_dist, layer_dic, delta_2, A_2, vol_dec)
 cur_time = 0
 simulation_time = 55  # sec
 
