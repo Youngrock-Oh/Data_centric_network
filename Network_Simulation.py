@@ -41,7 +41,7 @@ while cur_time < simulation_time:
     cur_time += close_service_time
 
 simulation_service_time = cur_network.Net_completion_time/cur_network.Num_completed_data
-res_3 = ar.analytic_avg_delay(arrival_rates, service_rates, delta, A)
+res_3 = ar.analytic_avg_delay_two_layers(arrival_rates, service_rates, delta, A)
 print('Gradient method: ', res_grad['Mean_completion_time'], res_grad['A'])
 print('Barrier method: ', res_bar['Mean_completion_time'], res_bar['A'])
 print('Analytic result: ', res_3)

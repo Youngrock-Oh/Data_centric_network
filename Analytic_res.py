@@ -199,7 +199,7 @@ def grad_projected(arrival_rates, service_rates, delta, initial_a):
     for i in range(n1):
         for j in range(n2):
             F = F + lbd[i] * delta[i][j] * a[i][j]
-    F = F * sum(arrival_rates)
+    F = F/sum(arrival_rates)
 
     result = {'A': a, 'Mean_completion_time': F}
     return result
@@ -254,11 +254,11 @@ def barrier_method(arrival_rates, service_rates, delta, initial_a, eps1 = 1e-7, 
         # 2nd sum
         for j in range(Nl - 1):
             for i in range(Ml):
-                S22 += arrival_rates[i] * deltas[i, j + 1] * (Z[i, j + 1] - Z[i, j] + 1 / Nl)
+                S22 += arrival_rates[i] * delta[i, j + 1] * (Z[i, j + 1] - Z[i, j] + 1 / Nl)
             S21 += S22
             S22 *= 0
         for i in range(Ml):
-            S22 += arrival_rates[i] * deltas[i, 0] * (Z[i, 0] - Z[i, Nl - 1] + 1 / Nl)
+            S22 += arrival_rates[i] * delta[i, 0] * (Z[i, 0] - Z[i, Nl - 1] + 1 / Nl)
         S21 += S22
         # 3rd sum
         for j in range(Nl - 1):
@@ -311,7 +311,7 @@ def barrier_method(arrival_rates, service_rates, delta, initial_a, eps1 = 1e-7, 
                 grad[al * Nl + be + 1] = k * (
                             arrival_rates[al] * service_rates[be + 1] / pow((service_rates[be + 1] - T1), 2) - arrival_rates[al] * service_rates[be + 2] / pow(
                         (service_rates[be + 2] - T2), 2) \
-                            + arrival_rates[al] * deltas[al, be + 1] - arrival_rates[al] * deltas[al, be + 2]) \
+                            + arrival_rates[al] * delta[al, be + 1] - arrival_rates[al] * delta[al, be + 2]) \
                                          - (1 / (Z[al, be + 1] - Z[al, be] + 1 / Nl) - 1 / (
                             Z[al, be + 2] - Z[al, be + 1] + 1 / Nl)) \
                                          - (-1 / (1 - (Z[al, be + 1] - Z[al, be] + 1 / Nl)) + 1 / (
@@ -334,7 +334,7 @@ def barrier_method(arrival_rates, service_rates, delta, initial_a, eps1 = 1e-7, 
             grad[al * Nl + Nl - 1] = k * (
                         arrival_rates[al] * service_rates[Nl - 1] / pow((service_rates[Nl - 1] - T1), 2) - arrival_rates[al] * service_rates[0] / pow(
                     (service_rates[0] - T2), 2) \
-                        + arrival_rates[al] * deltas[al, Nl - 1] - arrival_rates[al] * deltas[al, 0]) \
+                        + arrival_rates[al] * delta[al, Nl - 1] - arrival_rates[al] * delta[al, 0]) \
                                      - (1 / (Z[al, Nl - 1] - Z[al, Nl - 2] + 1 / Nl) - 1 / (
                         Z[al, 0] - Z[al, Nl - 1] + 1 / Nl)) \
                                      - (-1 / (1 - (Z[al, Nl - 1] - Z[al, Nl - 2] + 1 / Nl)) + 1 / (
@@ -356,7 +356,7 @@ def barrier_method(arrival_rates, service_rates, delta, initial_a, eps1 = 1e-7, 
                 T4 += Z[i, 1] - Z[i, 0] + 1 / Nl
             grad[al * Nl] = k * (
                         arrival_rates[al] * service_rates[0] / pow((service_rates[0] - T1), 2) - arrival_rates[al] * service_rates[1] / pow((service_rates[1] - T2), 2) \
-                        + arrival_rates[al] * deltas[al, 0] - arrival_rates[al] * deltas[al, 1]) \
+                        + arrival_rates[al] * delta[al, 0] - arrival_rates[al] * delta[al, 1]) \
                             - (1 / (Z[al, 0] - Z[al, Nl - 1] + 1 / Nl) - 1 / (Z[al, 1] - Z[al, 0] + 1 / Nl)) \
                             - (-1 / (1 - (Z[al, 0] - Z[al, Nl - 1] + 1 / Nl)) + 1 / (
                         1 - (Z[al, 1] - Z[al, 0] + 1 / Nl))) \
@@ -604,12 +604,13 @@ def barrier_method(arrival_rates, service_rates, delta, initial_a, eps1 = 1e-7, 
         service1 += lambda_hats[i] / (service_rates[i] - lambda_hats[i])
     for i in range(Ml):
         for j in range(Nl):
-            service2 += arrival_rates[i] * deltas[i, j] * A[i, j]
+            service2 += arrival_rates[i] * delta[i, j] * A[i, j]
     service_time = service1 + service2
     # condition check
     D = np.zeros((Ml, Nl))
     for i in range(Ml):
         for j in range(Nl):
-            D[i, j] = service_rates[j] / pow(service_rates[j] - lambda_hats[j], 2) + deltas[i, j]
+            D[i, j] = service_rates[j] / pow(service_rates[j] - lambda_hats[j], 2) + delta[i, j]
+    service_time = service_time / sum(arrival_rates)
     result = {'A': A, 'lambda_hats': lambda_hats, 'Mean_completion_time': service_time, 'D': D}
     return result
