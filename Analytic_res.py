@@ -28,13 +28,14 @@ def delay_return(locations_source, locations_server):
 
 
 def analytic_avg_delay_two_layers(arrival_rates, service_rates, delta, A):
-    '''
-	arrival_rates (array, 1 by m size)
-	service_rates (array, 1 by n size)
-	A: routing probabilities (array  m by n size)
-	Output:
-	expected service time including propagation delay considering just two layers
-	'''
+    """
+    :param arrival_rates: arrival_rates (array, 1 by m size)
+    :param service_rates: service_rates (array, 1 by n size)
+    :param delta:
+    :param A: routing probabilities (array  m by n size)
+    :return: expected service time including propagation delay considering just two layers
+    """
+
     m = len(arrival_rates)
     n = len(service_rates)
     lambda_hat = np.matmul(arrival_rates, A)
@@ -43,15 +44,28 @@ def analytic_avg_delay_two_layers(arrival_rates, service_rates, delta, A):
         res_sum += np.dot(A[i, :], 1 / (service_rates - lambda_hat) + delta[i, :]) * arrival_rates[i]
     return res_sum / sum(arrival_rates)
 
-def analytic_avg_delay(rates, delta, A, data_type_dist, layer_dic):
-    '''
-    	rates: [array (rates in layer 0), array (rates in layer 0), ...]
-    	A: routing probabilities [array (routing probabilites in layer 0), array (routing probabilites in layer 0), ...]
-    	data_type_dist: [p1, p2, ...] data type distribution
-    	layer_dic: {0: [l_01, l_02, ...], 1: [l_11, 1_12, ...]} required layers for each data type
-    	Output:
-    	expected service time including propagation delay
-    '''
+
+def analytic_avg_delay(rates, delta, routing_p, vol_dec):
+    """
+    :param rates: [array (rates in layer 0), array (rates in layer 0), ...]
+    :param delta:
+    :param routing_p: routing probabilities [array (routing probabilites in layer 0), array (routing probabilites in layer 0), ...]
+    :param vol_dec:
+    :return: expected service time including propagation delay
+    """
+    layer_num = len(rates)
+    lambda_hat = [np.zeros((1, len(rates[i]))) for i in range(layer_num)]
+    lambda_hat[0] = rates[0]
+    for i in range(1, layer_num):
+        lambda_hat[i] = np.matmul(lambda_hat[i - 1], routing_p[i - 1])
+        test = rates[i] - lambda_hat[i]
+        if test[test <= 0]:
+            print("Initial A is wrong!")
+            return 1
+    res_sum = 0
+    for i in range(layer_num - 1):
+        res_sum += analytic_avg_delay_two_layers(lambda_hat[i], rates[i + 1] / vol_dec[:i+1].prod(), delta[i], routing_p[i])
+    return res_sum
 
 
 
