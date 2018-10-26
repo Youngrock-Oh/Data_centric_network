@@ -2,6 +2,8 @@ import numpy as np
 import Network_Classes as NC
 import time
 import Analytic_res as ar
+import KJ
+import JS
 
 start_time = time.time()
 
