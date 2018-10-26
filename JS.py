@@ -4,6 +4,8 @@ from numpy.random import uniform
 import math
 
 
+print(1)
+
 # Written by JS
 def barrier_method(arrival_rates, service_rates, delta, initial_a, eps1 = 1e-7, eps2 = 1e-7, t0 = 1, m = 1.1, alpha = 0.01, beta = 0.1):
     arrival_rates = np.array(arrival_rates, dtype=np.float64)
