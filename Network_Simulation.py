@@ -29,12 +29,12 @@ for i in range(len(rates) - 1):
 initial_a = [np.ones((len(locations[i]), len(locations[i + 1])))/len(locations[i + 1]) for i in range(len(rates) - 1)]
 
 delta_2 = delta + [np.zeros((2, 1))]
-#res_grad = ar.grad_projected(arrival_rates, service_rates, delta, initial_a)
-#res_bar = ar.barrier_method(arrival_rates, service_rates, delta, initial_a)
-#A = res_bar['A']
+# res_grad = ar.grad_projected(arrival_rates, service_rates, delta, initial_a)
+# res_bar = ar.barrier_method(arrival_rates, service_rates, delta, initial_a)
+# A = res_bar['A']
 A_2 = initial_a + [np.zeros((2, 1))]
 # data type distribution and layer_dic
-data_type_dist = [1]
+data_type_dist = np.array([1])
 layer_dic = {0: [0, 1, 2]}
 vol_dec = np.array([1, 1, 1])
 cur_network = NC.Network(rates, data_type_dist, layer_dic, delta_2, A_2, vol_dec)

@@ -6,6 +6,8 @@ import math
 
 c = 3e5  # km / sec
 # Return path delay between two nodes
+
+
 def delay(loc_1, loc_2):
     x = loc_1[0] - loc_2[0]
     y = loc_1[1] - loc_2[1]
@@ -68,8 +70,6 @@ def analytic_avg_delay(rates, delta, routing_p, vol_dec):
     return res_sum
 
 
-
-
 def uniform_random_network(net_region_width, net_region_height, layer_num, node_num, avg_rate_source_node):
     """
     Inputs:
@@ -77,11 +77,9 @@ def uniform_random_network(net_region_width, net_region_height, layer_num, node_
     layer_num: # of layers (int)
     node_num: # of servers in each layer (list)
     avg_rate_source_node (float)
-
     Construct locations using PPP
     Construct rates using rate_margin and rate_sigma and uniform distribution
     Construct routing probability - uniform
-
     Outputs: locations, rates, routing probability A
     """
     locations = [[] for i in range(layer_num)]
@@ -129,3 +127,28 @@ def no_delay_optimal(arrival_rates, service_rates):
     service_time = service_time / sum(arrival_rates)
     result = {'lambda_hat': lambda_hat, 'Mean_completion_time': service_time}
     return result
+
+
+def cur_vol(cur_layer_index, layer_dic, vol_dec):
+    data_type_num = len(layer_dic.keys())
+    res = np.ones(data_type_num)
+    for i in range(data_type_num):
+        for j in range(cur_layer_index + 1):
+            if layer_dic[i].count(j) > 0:
+                res[i] *= vol_dec[j]
+    return 1 / res
+
+
+def effective_rates(arrival_rates, service_rates, cur_layer_index, layer_dic, data_dist, vol_dec):
+    data_type_num = len(data_dist)
+    effective_dist = np.zeros(data_type_num)
+    data_vol = cur_vol(cur_layer_index, layer_dic, vol_dec)
+    for i in range(data_type_num):
+        if layer_dic[i].count(cur_layer_index + 1) > 0:
+            effective_dist[i] = data_dist[i]
+    eff_arrival_rates = arrival_rates * sum(effective_dist)
+    eff_service_rates = service_rates * (np.dot(data_vol, effective_dist) / sum(effective_dist))
+    return [eff_arrival_rates, eff_service_rates]
+
+
+
