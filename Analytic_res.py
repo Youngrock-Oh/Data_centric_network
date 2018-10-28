@@ -153,17 +153,34 @@ def effective_rates(arrival_rates, service_rates, cur_layer_index, layer_dic, da
     return [eff_arrival_rates, eff_service_rates]
 
 
-def grad_multi_layers(rates, delta, initial_a, layer_dic, data_dist, vol_dec):
+def grad_multi_layers(rates, delta, initial_a, layer_dic, data_type_dist, vol_dec):
     layer_num = len(rates)
     optimal_A = []
     source_rates = rates[0]
     for l in range(layer_num - 1):
         temp_arr_rates = source_rates
         temp_ser_rates = rates[l + 1]
-        eff_rates = effective_rates(temp_arr_rates, temp_ser_rates, l, layer_dic, data_dist, vol_dec)
+        eff_rates = effective_rates(temp_arr_rates, temp_ser_rates, l, layer_dic, data_type_dist, vol_dec)
         eff_arr_rates = eff_rates[0]
         eff_ser_rates = eff_rates[1]
         temp_res = grad_projected(eff_arr_rates, eff_ser_rates, delta[l], initial_a[l])
+        temp_A = temp_res['A']
+        optimal_A.append(temp_A)
+        source_rates = np.matmul(source_rates, temp_A)
+    return optimal_A
+
+
+def barrier_multi_layers(rates, delta, initial_a, layer_dic, data_type_dist, vol_dec):
+    layer_num = len(rates)
+    optimal_A = []
+    source_rates = rates[0]
+    for l in range(layer_num - 1):
+        temp_arr_rates = source_rates
+        temp_ser_rates = rates[l + 1]
+        eff_rates = effective_rates(temp_arr_rates, temp_ser_rates, l, layer_dic, data_type_dist, vol_dec)
+        eff_arr_rates = eff_rates[0]
+        eff_ser_rates = eff_rates[1]
+        temp_res = barrier_method(eff_arr_rates, eff_ser_rates, delta[l], initial_a[l])
         temp_A = temp_res['A']
         optimal_A.append(temp_A)
         source_rates = np.matmul(source_rates, temp_A)

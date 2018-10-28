@@ -2,8 +2,6 @@ import numpy as np
 import Network_Classes as NC
 import time
 import Analytic_res as ar
-import KJ
-import JS
 
 start_time = time.time()
 
@@ -30,26 +28,34 @@ delta = [np.zeros((len(locations[i]), len(locations[i + 1]))) for i in range(len
 for i in range(len(rates) - 1):
     delta[i] = ar.delay_return(locations[i], locations[i + 1])
 initial_a = [np.ones((len(locations[i]), len(locations[i + 1])))/len(locations[i + 1]) for i in range(len(rates) - 1)]
-
 delta_2 = delta + [np.zeros((2, 1))]
-res_A = ar.grad_multi_layers(rates, delta, initial_a, layer_dic, data_type_dist, vol_dec)
-A_2 = res_A + [np.zeros((2, 1))]
-cur_network = NC.Network(rates, data_type_dist, layer_dic, delta_2, A_2, vol_dec)
-cur_time = 0
-simulation_time = 1000  # sec
+simulation_time = 100  # sec
 t = 0
-while cur_time < simulation_time:
-    close_event_info = cur_network.update_time()
-    close_service_time = close_event_info[0]
-    sending_index = close_event_info[1]
-    cur_network.update(close_service_time, sending_index)
-    cur_time += close_service_time
-    if cur_time >= 100*t:
-        print(cur_time)
-        t += 1
+simulation_cases = {0: "Uniform routing", 1: "Barrier method", 2: "Projected gradient method"}
+simulation_service_time = np.zeros(3)
+for case_num, case in simulation_cases.items():
+    if case_num == 0:
+        res_A = initial_a
+    elif case_num == 1:
+        res_A = ar.barrier_multi_layers(rates, delta, initial_a, layer_dic, data_type_dist, vol_dec)
+    else:
+        res_A = ar.grad_multi_layers(rates, delta, initial_a, layer_dic, data_type_dist, vol_dec)
 
-simulation_service_time = cur_network.Net_completion_time / cur_network.Num_completed_data / 10
-# rescaling
-print('Simulation result: ', simulation_service_time)
+    A_2 = res_A + [np.zeros((2, 1))]
+    cur_network = NC.Network(rates, data_type_dist, layer_dic, delta_2, A_2, vol_dec)
+    cur_time = 0
+    while cur_time < simulation_time:
+        close_event_info = cur_network.update_time()
+        close_service_time = close_event_info[0]
+        sending_index = close_event_info[1]
+        cur_network.update(close_service_time, sending_index)
+        cur_time += close_service_time
+        if cur_time >= 100*t:
+            print(cur_time)
+            t += 1
+    simulation_service_time[case_num] = cur_network.Net_completion_time / cur_network.Num_completed_data / 10
+    # rescaling
+    print("%s: Simulation for %s " % (case_num, case))
+    print('Simulation result: %s sec' % simulation_service_time[case_num])
 print("--- %s seconds ---" % (time.time() - start_time))
 
