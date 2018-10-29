@@ -51,9 +51,9 @@ def analytic_avg_delay_two_layers(arrival_rates, service_rates, delta, A):
 
 def analytic_avg_delay(rates, delta, routing_p, vol_dec):
     """
-    :param rates: [array (rates in layer 0), array (rates in layer 0), ...]
+    :param rates: [array (rates in layer 0), array (rates in layer 1), ...]
     :param delta:
-    :param routing_p: routing probabilities [array (routing probabilites in layer 0), array (routing probabilites in layer 0), ...]
+    :param routing_p: routing probabilities [array (routing probabilites in layer 0), array (routing probabilites in layer 1), ...]
     :param vol_dec:
     :return: expected service time including propagation delay
     """
@@ -157,7 +157,7 @@ def grad_multi_layers(rates, delta, initial_a, layer_dic, data_type_dist, vol_de
     layer_num = len(rates)
     optimal_A = []
     source_rates = rates[0]
-    for l in range(layer_num - 1):
+    for l in range(layer_num - 2):
         temp_arr_rates = source_rates
         temp_ser_rates = rates[l + 1]
         eff_rates = effective_rates(temp_arr_rates, temp_ser_rates, l, layer_dic, data_type_dist, vol_dec)
@@ -167,6 +167,8 @@ def grad_multi_layers(rates, delta, initial_a, layer_dic, data_type_dist, vol_de
         temp_A = temp_res['A']
         optimal_A.append(temp_A)
         source_rates = np.matmul(source_rates, temp_A)
+    last_layer_num = len(rates[layer_num - 2])
+    optimal_A.append(np.ones((last_layer_num, 1)))
     return optimal_A
 
 
@@ -174,7 +176,7 @@ def barrier_multi_layers(rates, delta, initial_a, layer_dic, data_type_dist, vol
     layer_num = len(rates)
     optimal_A = []
     source_rates = rates[0]
-    for l in range(layer_num - 1):
+    for l in range(layer_num - 2):
         temp_arr_rates = source_rates
         temp_ser_rates = rates[l + 1]
         eff_rates = effective_rates(temp_arr_rates, temp_ser_rates, l, layer_dic, data_type_dist, vol_dec)
@@ -184,4 +186,6 @@ def barrier_multi_layers(rates, delta, initial_a, layer_dic, data_type_dist, vol
         temp_A = temp_res['A']
         optimal_A.append(temp_A)
         source_rates = np.matmul(source_rates, temp_A)
+    last_layer_num = len(rates[layer_num - 2])
+    optimal_A.append(np.ones((last_layer_num, 1)))
     return optimal_A
