@@ -137,8 +137,8 @@ def cur_vol(cur_layer_index, layer_dic, vol_dec):
     for i in range(data_type_num):
         for j in range(cur_layer_index + 1):
             if layer_dic[i].count(j) > 0:
-                res[i] *= vol_dec[j]
-    return 1 / res
+                res[i] /= vol_dec[j]
+    return res
 
 
 def effective_rates(arrival_rates, service_rates, cur_layer_index, layer_dic, data_dist, vol_dec):
@@ -185,7 +185,9 @@ def barrier_multi_layers(rates, delta, initial_a, layer_dic, data_type_dist, vol
         temp_res = barrier_method(eff_arr_rates, eff_ser_rates, delta[l], initial_a[l])
         temp_A = temp_res['A']
         optimal_A.append(temp_A)
+        print(temp_A)
         source_rates = np.matmul(source_rates, temp_A)
+        print(eff_ser_rates - source_rates)
     last_layer_num = len(rates[layer_num - 2])
     optimal_A.append(np.ones((last_layer_num, 1)))
     return optimal_A
