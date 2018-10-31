@@ -16,7 +16,7 @@ avg_rate_main_server = 1 / (data_size * cycle_per_bit / cycle_per_slot_main_serv
 rates_0 = np.array([24 + i for i in range(25)])
 rates_1 = np.array([210 + 10 * i for i in range(9)])
 rates_1[0] = 150
-rates_1[0] = 150
+rates_1[1] = 150
 rates_2 = np.array([300, 350, 350, 400])
 rates_3 = np.array([1000])
 rates = [rates_0, rates_1, rates_2, rates_3]
@@ -34,7 +34,7 @@ for i in range(len(rates) - 1):
     delta[i] = ar.delay_return(locations[i], locations[i + 1])
 initial_a = [np.ones((len(locations[i]), len(locations[i + 1])))/len(locations[i + 1]) for i in range(len(rates) - 1)]
 delta_2 = delta + [np.zeros((4, 1))]
-simulation_time = 20  # sec
+simulation_time = 10  # sec
 t = 0
 simulation_cases = {0: "Uniform routing", 1: "Barrier method", 2: "Projected gradient method", 3: "Legacy"}
 simulation_service_time = np.zeros(4)

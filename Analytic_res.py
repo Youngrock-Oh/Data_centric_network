@@ -1,7 +1,6 @@
 from math import sqrt
 import numpy as np
 from numpy.random import uniform
-import math
 from KJ import grad_projected
 from JS import barrier_method
 
@@ -185,7 +184,7 @@ def barrier_multi_layers(rates, delta, initial_a, layer_dic, data_type_dist, vol
         temp_res = barrier_method(eff_arr_rates, eff_ser_rates, delta[l], initial_a[l])
         temp_A = temp_res['A']
         optimal_A.append(temp_A)
-        print(temp_A)
+        print(temp_A[temp_A <= 0])
         source_rates = np.matmul(source_rates, temp_A)
         print(eff_ser_rates - source_rates)
     last_layer_num = len(rates[layer_num - 2])
