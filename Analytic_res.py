@@ -1,7 +1,6 @@
 from math import sqrt
 import numpy as np
 from numpy.random import uniform
-import math
 from KJ import grad_projected
 from JS import barrier_method
 
