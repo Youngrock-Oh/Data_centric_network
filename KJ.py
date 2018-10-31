@@ -7,7 +7,7 @@ import math
 def grad_projected(arrival_rates, service_rates, delta, initial_a):
     prsc = 'float64'
     N = 2000
-    ep = 0.000000001
+    ep = 0.00000000001
     gamma = 0.001
     # parameter end
 
@@ -53,7 +53,7 @@ def grad_projected(arrival_rates, service_rates, delta, initial_a):
             if np.linalg.norm(s) < ep:
                 subI = I.copy()
                 for i in range(len(I)):
-                    if lbd3[n1 + i] < ep:
+                    if lbd3[n1 + i] < 0:
                         subI.remove(I[i])
                         ps = 1
                 I = subI.copy()
@@ -61,13 +61,13 @@ def grad_projected(arrival_rates, service_rates, delta, initial_a):
                     ter = 1
         if ter == 1:
             break
-        gamma2 = gamma
-        norm = 0
-        for i in range(n1 * n2):
-            norm = norm + s[i] * s[i]
-        s = s / np.sqrt(norm)
+        if np.linalg.norm(s) > 1:
+            s = s / np.linalg.norm(s)
+        gamma2 = gamma * 2 * random.random()
         for i in range(n1):
             for j in range(n2):
+                if n2 * i + j in I:
+                    continue
                 if s[n2 * i + j] >= 0:
                     continue
                 else:
@@ -79,13 +79,16 @@ def grad_projected(arrival_rates, service_rates, delta, initial_a):
             for i in range(n1):
                 lbd2 = lbd[i] * a[i][j]
                 disp = s[n2 * i + j] * lbd[i]
-            if disp < ep:
+            if disp <= 0:
                 continue
             else:
-                if gamma2 >= (mu[j] - lbd2 - ep) / disp:
-                    gamma2 = (mu[j] - lbd2 - ep) / disp
-
+                if gamma2 >= (mu[j] - lbd2) / disp:
+                    gamma2 = (mu[j] - lbd2) / disp
         a = a + gamma2 * np.reshape(s, (n1, n2))
+        for i in range(n1):
+            for j in range(n2):
+                if a[i][j] < 0:
+                    a[i][j] = 0
 
     F = 0
     for j in range(n2):
