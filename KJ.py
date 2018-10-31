@@ -26,6 +26,7 @@ def grad_projected(arrival_rates, service_rates, delta, initial_a):
                 if a[i][j] < ep:
                     I.append(n2 * i + j)
         ps = 1
+        ter = 0
         while ps == 1:
             NMT = np.array([[0] * (n1 * n2)] * (n1 + len(I)), dtype=prsc)
             for i in range(n1):
@@ -56,10 +57,18 @@ def grad_projected(arrival_rates, service_rates, delta, initial_a):
                         subI.remove(I[i])
                         ps = 1
                 I = subI.copy()
+                if ps == 0:
+                    ter = 1
+        if ter == 1:
+            break
         gamma2 = gamma
+        norm = 0
+        for i in range(n1 * n2):
+            norm = norm + s[i] * s[i]
+        s = s / np.sqrt(norm)
         for i in range(n1):
             for j in range(n2):
-                if s[n2 * i + j] >= -ep:
+                if s[n2 * i + j] >= 0:
                     continue
                 else:
                     if gamma2 >= -a[i][j] / s[n2 * i + j]:
@@ -70,11 +79,12 @@ def grad_projected(arrival_rates, service_rates, delta, initial_a):
             for i in range(n1):
                 lbd2 = lbd[i] * a[i][j]
                 disp = s[n2 * i + j] * lbd[i]
-            if disp <= ep:
+            if disp < ep:
                 continue
             else:
-                if gamma2 >= (mu[j] - lbd2) / 2 / disp:
-                    gamma2 = (mu[j] - lbd2) / 2 / disp
+                if gamma2 >= (mu[j] - lbd2 - ep) / disp:
+                    gamma2 = (mu[j] - lbd2 - ep) / disp
+
         a = a + gamma2 * np.reshape(s, (n1, n2))
 
     F = 0
