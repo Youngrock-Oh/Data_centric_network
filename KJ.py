@@ -87,8 +87,13 @@ def grad_projected(arrival_rates, service_rates, delta, initial_a):
                     gamma2 = (mu[j] - lbd2) / disp
         a = a + gamma2 * np.reshape(s, (n1, n2))
         for i in range(n1):
+            jmax = 0
             for j in range(n2):
-                if a[i][j] < 0:
+                if a[i][j]>a[i][jmax]:
+                    jmax = j
+            for j in range(n2):
+                if a[i][j]<0:
+                    a[i][jmax] = a[i][jmax]+a[i][j]
                     a[i][j] = 0
 
     F = 0
