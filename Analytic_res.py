@@ -152,9 +152,9 @@ def effective_rates(arrival_rates, service_rates, cur_layer_index, layer_dic, da
     return [eff_arrival_rates, eff_service_rates]
 
 
-def grad_multi_layers(rates, delta, initial_a, layer_dic, data_type_dist, vol_dec):
+def grad_multi_layers(rates, delta, layer_dic, data_type_dist, vol_dec):
     layer_num = len(rates)
-    optimal_A = []
+    optimal_a = []
     source_rates = rates[0]
     for l in range(layer_num - 2):
         temp_arr_rates = source_rates
@@ -162,18 +162,19 @@ def grad_multi_layers(rates, delta, initial_a, layer_dic, data_type_dist, vol_de
         eff_rates = effective_rates(temp_arr_rates, temp_ser_rates, l, layer_dic, data_type_dist, vol_dec)
         eff_arr_rates = eff_rates[0]
         eff_ser_rates = eff_rates[1]
-        temp_res = grad_projected(eff_arr_rates, eff_ser_rates, delta[l], initial_a[l])
-        temp_A = temp_res['A']
-        optimal_A.append(temp_A)
-        source_rates = np.matmul(source_rates, temp_A)
+        initial_a = valid_initial_rates(eff_arr_rates, eff_ser_rates, 0.9)
+        temp_res = grad_projected(eff_arr_rates, eff_ser_rates, delta[l], initial_a)
+        temp_a = temp_res['A']
+        optimal_a.append(temp_a)
+        source_rates = np.matmul(source_rates, temp_a)
     last_layer_num = len(rates[layer_num - 2])
-    optimal_A.append(np.ones((last_layer_num, 1)))
-    return optimal_A
+    optimal_a.append(np.ones((last_layer_num, 1)))
+    return optimal_a
 
 
-def barrier_multi_layers(rates, delta, initial_a, layer_dic, data_type_dist, vol_dec):
+def barrier_multi_layers(rates, delta, layer_dic, data_type_dist, vol_dec):
     layer_num = len(rates)
-    optimal_A = []
+    optimal_a = []
     source_rates = rates[0]
     for l in range(layer_num - 2):
         temp_arr_rates = source_rates
@@ -181,12 +182,33 @@ def barrier_multi_layers(rates, delta, initial_a, layer_dic, data_type_dist, vol
         eff_rates = effective_rates(temp_arr_rates, temp_ser_rates, l, layer_dic, data_type_dist, vol_dec)
         eff_arr_rates = eff_rates[0]
         eff_ser_rates = eff_rates[1]
-        temp_res = barrier_method(eff_arr_rates, eff_ser_rates, delta[l], initial_a[l])
-        temp_A = temp_res['A']
-        optimal_A.append(temp_A)
-        print(temp_A[temp_A <= 0])
-        source_rates = np.matmul(source_rates, temp_A)
+        initial_a = valid_initial_rates(eff_arr_rates, eff_ser_rates, 0.9)
+        temp_res = barrier_method(eff_arr_rates, eff_ser_rates, delta[l], initial_a)
+        temp_a = temp_res['A']
+        optimal_a.append(temp_a)
+        print(temp_a[temp_a <= 0])
+        source_rates = np.matmul(source_rates, temp_a)
         print(eff_ser_rates - source_rates)
     last_layer_num = len(rates[layer_num - 2])
-    optimal_A.append(np.ones((last_layer_num, 1)))
-    return optimal_A
+    optimal_a.append(np.ones((last_layer_num, 1)))
+    return optimal_a
+
+
+def valid_initial_rates(source_rates, server_rates, para):
+    """
+    :param source_rates: source rates (array)
+    :param server_rates: server rates (array)
+    :param para: parameter for finding initial rates
+    :return: valid initial routing probabilities that guarantees queue stability
+    """
+    eps = 0.001
+    sources_num = len(source_rates)
+    servers_num = len(server_rates)
+    initial_a = eps * np.ones((sources_num, servers_num))
+    for i in range(servers_num):
+        temp = np.ones(sources_num) * para * server_rates[i] / np.sum(source_rates)
+        initial_a[:, i] = np.minimum(temp, 1 - np.sum(initial_a, 1) + initial_a[:, i])
+    source_rates = np.matmul(source_rates.reshape((1, sources_num)), initial_a).flatten()
+    print(server_rates - source_rates)
+    return initial_a
+
