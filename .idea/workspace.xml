@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="7645b303-9977-4e6e-b16a-64a0dbc95d87" name="Default Changelist" comment="imporved performance significantly">
+    <list default="true" id="7645b303-9977-4e6e-b16a-64a0dbc95d87" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/KJ.py" beforeDir="false" afterPath="$PROJECT_DIR$/KJ.py" afterDir="false" />
     </list>
@@ -51,10 +51,11 @@
     <session id="1724151361">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="1" />
+          <entry key="project.closed" value="2" />
           <entry key="project.open.time.1" value="1" />
+          <entry key="project.open.time.2" value="1" />
           <entry key="project.open.time.3" value="1" />
-          <entry key="project.opened" value="2" />
+          <entry key="project.opened" value="3" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -70,12 +71,12 @@
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="py" value="1" />
-          <entry key="txt" value="70" />
+          <entry key="txt" value="94" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="PLAIN_TEXT" value="70" />
+          <entry key="PLAIN_TEXT" value="94" />
           <entry key="Python" value="1" />
         </counts>
       </usages-collector>
@@ -96,8 +97,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/KJ.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="76">
-              <caret line="4" column="13" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
+            <state relative-caret-position="220">
+              <caret line="73" column="9" lean-forward="true" selection-start-line="73" selection-start-column="9" selection-end-line="73" selection-end-column="9" />
               <folding>
                 <element signature="e#0#21#0" expanded="true" />
               </folding>
@@ -175,7 +176,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="668" />
     <option name="y" value="73" />
     <option name="width" value="974" />
@@ -187,6 +188,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -198,7 +200,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -348,7 +349,14 @@
       <option name="project" value="LOCAL" />
       <updated>1540995920960</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="fix minor mistake">
+      <created>1540996181414</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1540996181414</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TodoView" selected-index="3">
@@ -361,10 +369,10 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="668" y="73" width="974" height="1047" extended-state="0" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.3888889" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.19178082" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -374,7 +382,7 @@
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.33004385" />
-      <window_info active="true" anchor="bottom" id="Version Control" order="7" visible="true" weight="0.32894737" />
+      <window_info active="true" anchor="bottom" id="Version Control" order="7" visible="true" weight="0.3257329" />
       <window_info anchor="bottom" id="Event Log" order="8" sideWeight="0.50053304" side_tool="true" weight="0.3991323" />
       <window_info anchor="bottom" id="Python Console" order="9" sideWeight="0.4989339" weight="0.32968238" />
       <window_info anchor="bottom" id="Terminal" order="10" sideWeight="0.4989339" weight="0.28258488" />
@@ -425,7 +433,8 @@
     </ignored-roots>
     <MESSAGE value="Solved out-of-range problem" />
     <MESSAGE value="imporved performance significantly" />
-    <option name="LAST_COMMIT_MESSAGE" value="imporved performance significantly" />
+    <MESSAGE value="fix minor mistake" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix minor mistake" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -482,6 +491,13 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/Analytic_res.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="438">
+          <caret line="53" selection-start-line="53" selection-end-line="53" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Network_Simulation.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="836">
@@ -499,17 +515,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Analytic_res.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="438">
-          <caret line="53" selection-start-line="53" selection-end-line="53" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/KJ.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="76">
-          <caret line="4" column="13" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
+        <state relative-caret-position="220">
+          <caret line="73" column="9" lean-forward="true" selection-start-line="73" selection-start-column="9" selection-end-line="73" selection-end-column="9" />
           <folding>
             <element signature="e#0#21#0" expanded="true" />
           </folding>
