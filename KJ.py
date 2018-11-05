@@ -95,7 +95,7 @@ def grad_projected(arrival_rates, service_rates, delta, initial_a):
                 if a[i][j]<0:
                     a[i][jmax] = a[i][jmax]+a[i][j]
                     a[i][j] = 0
-        gamma = gamma*0.999
+        gamma = gamma*0.9995
     F = 0
     for j in range(n2):
         lbd2 = 0

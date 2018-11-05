@@ -32,7 +32,7 @@ for i in range(len(rates) - 1):
     delta[i] = ar.delay_return(locations[i], locations[i + 1])
 initial_a = [np.ones((len(locations[i]), len(locations[i + 1])))/len(locations[i + 1]) for i in range(len(rates) - 1)]
 delta_2 = delta + [np.zeros((4, 1))]
-simulation_time = 10  # sec
+simulation_time = 1000  # sec
 t = 0
 simulation_cases = {0: "Uniform routing", 1: "Barrier method", 2: "Projected gradient method", 3: "Legacy"}
 simulation_service_time = np.zeros(4)
