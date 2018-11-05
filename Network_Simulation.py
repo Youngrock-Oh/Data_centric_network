@@ -13,8 +13,8 @@ cycle_per_slot_main_server = 5 * 10 ** 15  # (cycles per slot)
 T_slot = 100*10**-3  # time slot 100ms
 
 avg_rate_main_server = 1 / (data_size * cycle_per_bit / cycle_per_slot_main_server * T_slot)
-rates_0 = np.array([20 + 10*(i//5) for i in range(25)])
-rates_1 = np.array([200+100* (i//3) for i in range(9)])
+rates_0 = np.array([30 + 20*(i//5) for i in range(25)])
+rates_1 = np.array([250+100* (i//3) for i in range(9)])
 rates_2 = np.array([500, 600, 800, 900])
 rates_3 = np.array([1500])
 rates = [rates_0, rates_1, rates_2, rates_3]
