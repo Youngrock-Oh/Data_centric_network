@@ -84,8 +84,10 @@ class Network:
         self.delta = delta
         self.A = A
         self.vol_dec = vol_dec
-        self.Num_completed_data = 0
-        self.Net_completion_time = 0
+        self.Num_completed_data_type = np.zeros(len(layer_dic))
+        self.Net_completion_time_type = np.zeros(len(layer_dic))
+        self.avg_completion_time = 0
+        self.avg_completion_time_types = np.zeros(len(layer_dic))
         # Construct nodes in the network
         layer_num = len(rates)
         self.network_nodes = [[] for i in range(layer_num)]
@@ -144,22 +146,29 @@ class Network:
                             next_node = self.network_nodes[l + 1][next_index]
                             sending_node.transfer_to(self.medium, sending_data, next_node)
                         else:  # Processing the data is over
-                            self.Num_completed_data += 1
-                            self.Net_completion_time += sending_data.spending_time
+                            self.complete(sending_data)
                             del sending_node.data_stack[0]
                             if not sending_node.data_stack:
                                 sending_node.remaining_time = []
                             elif sending_node.data_stack[0].need_layers.count(l) > 0:
-                                sending_node.remaining_time = sending_node.data_stack[0].rate_factor * exponential(1 / sending_node.rate)
+                                sending_node.remaining_time = sending_node.data_stack[0].rate_factor * \
+                                                              exponential(1 / sending_node.rate)
                             else:
                                 sending_node.remaining_time = 0
                     else:
                         if sending_node.data_stack:
                             sending_node.remaining_time -= close_service_time
 
+    def complete(self, data):
+        temp_index = data.type
+        self.Num_completed_data_type[temp_index] += 1
+        self.Net_completion_time_type[temp_index] += data.spending_time
+        self.avg_completion_time = sum(self.Net_completion_time_type) / sum(self.Num_completed_data_type)
+        if all(self.Num_completed_data_type > 0):
+            self.avg_completion_time_types = self.Net_completion_time_type / self.Num_completed_data_type
 
-# Class "Medium": corresponding to the transmission events
-class Medium:
+
+class Medium:    # Class "Medium": corresponding to the transmission events
     def __init__(self):
         self.data_stack = []  # [Data, next_node], list
         self.delay_time = []  # delay time

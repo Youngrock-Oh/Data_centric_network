@@ -186,9 +186,7 @@ def barrier_multi_layers(rates, delta, layer_dic, data_type_dist, vol_dec):
         temp_res = barrier_method(eff_arr_rates, eff_ser_rates, delta[l], initial_a)
         temp_a = temp_res['A']
         optimal_a.append(temp_a)
-        print(temp_a[temp_a <= 0])
         source_rates = np.matmul(source_rates, temp_a)
-        print(eff_ser_rates - source_rates)
     last_layer_num = len(rates[layer_num - 2])
     optimal_a.append(np.ones((last_layer_num, 1)))
     return optimal_a
@@ -209,6 +207,6 @@ def valid_initial_rates(source_rates, server_rates, para):
         temp = np.ones(sources_num) * para * server_rates[i] / np.sum(source_rates)
         initial_a[:, i] = np.minimum(temp, 1 - np.sum(initial_a, 1) + initial_a[:, i])
     source_rates = np.matmul(source_rates.reshape((1, sources_num)), initial_a).flatten()
-    print(server_rates - source_rates)
+    # print(server_rates - source_rates) # to check validity
     return initial_a
 

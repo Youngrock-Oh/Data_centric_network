@@ -26,13 +26,13 @@ locations = [loc_0, loc_1, loc_2, loc_3]
 # data type distribution and layer_dic
 data_type_dist = 1/7*np.ones(7)
 vol_dec = np.array([1, 0.8, 0.8, 1])
-layer_dic = {0: [0, 1], 1: [0, 2], 2: [0, 1, 2], 3: [0, 1, 2, 3], 4: [0, 3], 5: [0, 2, 3], 6: [0,1,3]}
+layer_dic = {0: [0, 1], 1: [0, 2], 2: [0, 1, 2], 3: [0, 1, 2, 3], 4: [0, 3], 5: [0, 2, 3], 6: [0, 1, 3]}
 delta = [np.zeros((len(locations[i]), len(locations[i + 1]))) for i in range(len(rates) - 1)]
 for i in range(len(rates) - 1):
     delta[i] = ar.delay_return(locations[i], locations[i + 1])
 initial_a = [np.ones((len(locations[i]), len(locations[i + 1])))/len(locations[i + 1]) for i in range(len(rates) - 1)]
 delta_2 = delta + [np.zeros((4, 1))]
-simulation_time = 1000  # sec
+simulation_time = 10  # sec
 t = 0
 simulation_cases = {0: "Uniform routing", 1: "Barrier method", 2: "Projected gradient method", 3: "Legacy"}
 simulation_service_time = np.zeros(4)
@@ -62,10 +62,9 @@ for case_num, case in simulation_cases.items():
         if cur_time >= 100*t:
             print(cur_time)
             t += 1
-    simulation_service_time[case_num] = cur_network.Net_completion_time / cur_network.Num_completed_data
-    # rescaling
+    simulation_service_time[case_num] = cur_network.avg_completion_time
     print("%s: Simulation for %s " % (case_num, case))
-    print('Simulation result: %s sec' % simulation_service_time[case_num])
-    # print(res_A[case_num])
+    print('Total avg processing completion time: %s sec' % simulation_service_time[case_num])
+    print('Completion time for each data type: ', cur_network.avg_completion_time_types)
 print("--- %s seconds ---" % (time.time() - start_time))
 
