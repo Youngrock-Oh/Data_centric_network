@@ -15,10 +15,8 @@ T_slot = 100*10**-3  # time slot 100ms
 avg_rate_main_server = 1 / (data_size * cycle_per_bit / cycle_per_slot_main_server * T_slot)
 rates_0 = np.array([30 + 20*(i//5) for i in range(25)])
 rates_1 = np.array([250+100* (i//3) for i in range(9)])
-#rates_1[0] = 150
-#rates_1[1] = 150
 rates_2 = np.array([500, 600, 800, 900])
-rates_3 = np.array([2000])
+rates_3 = np.array([1500])
 rates = [rates_0, rates_1, rates_2, rates_3]
 loc_0 = [[-12 + 6*i, -12 + 6*j] for i in range(5) for j in range(5)]
 loc_1 = [[-8 + 8*i, -8 + 8*j] for i in range(3) for j in range(3)]
@@ -34,7 +32,7 @@ for i in range(len(rates) - 1):
     delta[i] = ar.delay_return(locations[i], locations[i + 1])
 initial_a = [np.ones((len(locations[i]), len(locations[i + 1])))/len(locations[i + 1]) for i in range(len(rates) - 1)]
 delta_2 = delta + [np.zeros((4, 1))]
-simulation_time = 1000  # sec
+simulation_time = 10  # sec
 t = 0
 simulation_cases = {0: "Uniform routing", 1: "Barrier method", 2: "Projected gradient method", 3: "Legacy"}
 simulation_service_time = np.zeros(4)
@@ -43,9 +41,9 @@ for case_num, case in simulation_cases.items():
     if case_num == 0:
         res_A[case_num] = initial_a
     elif case_num == 1:
-        res_A[case_num] = ar.barrier_multi_layers(rates, delta, initial_a, layer_dic, data_type_dist, vol_dec)
+        res_A[case_num] = ar.barrier_multi_layers(rates, delta, layer_dic, data_type_dist, vol_dec)
     elif case_num == 2:
-        res_A[case_num] = ar.grad_multi_layers(rates, delta, initial_a, layer_dic, data_type_dist, vol_dec)
+        res_A[case_num] = ar.grad_multi_layers(rates, delta, layer_dic, data_type_dist, vol_dec)
     else:
         res_A[case_num] = initial_a
         data_type_dist = np.array([1])
