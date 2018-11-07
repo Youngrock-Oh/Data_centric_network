@@ -7,7 +7,7 @@ import random
 # Written by KJ
 def grad_projected(arrival_rates, service_rates, delta, initial_a):
     prsc = 'float64'
-    N = 20000
+    N = 100000
     ep = 0.00000000001
     gamma = 0.01
     # parameter end
@@ -95,7 +95,7 @@ def grad_projected(arrival_rates, service_rates, delta, initial_a):
                 if a[i][j]<0:
                     a[i][jmax] = a[i][jmax]+a[i][j]
                     a[i][j] = 0
-        gamma = gamma*0.9995
+        gamma = gamma*0.9999
     F = 0
     for j in range(n2):
         lbd2 = 0

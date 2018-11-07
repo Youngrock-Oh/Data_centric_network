@@ -67,4 +67,3 @@ for case_num, case in simulation_cases.items():
     print('Total avg processing completion time: %s sec' % simulation_service_time[case_num])
     print('Completion time for each data type: ', cur_network.avg_completion_time_types)
 print("--- %s seconds ---" % (time.time() - start_time))
-
