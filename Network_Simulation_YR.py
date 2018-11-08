@@ -3,10 +3,9 @@ import Network_Classes as NC
 import time
 import Analytic_res as ar
 
-start_time = time.time()
-
 
 def network_simulation(data_type_dist, layer_dic):
+    start_time = time.time()
     result1 = np.array([])
     result2 = np.array([[], [], [], [], [], [], []])
     rates_0 = np.array([30 + 20 * (i // 5) for i in range(25)])
@@ -29,7 +28,7 @@ def network_simulation(data_type_dist, layer_dic):
     initial_a = [np.ones((len(locations[i]), len(locations[i + 1]))) / len(locations[i + 1]) for i in
                  range(len(rates) - 1)]
     delta_2 = delta + [np.zeros((4, 1))]
-    simulation_time = 1  # sec
+    simulation_time = 1000  # sec
     t = 0
     simulation_cases = {0: "Uniform routing", 1: "Barrier method", 2: "Projected gradient method", 3: "Legacy"}
     simulation_service_time = np.zeros(4)
@@ -79,8 +78,16 @@ f1 = open("C:/Users/oe/PycharmProjects/ETRI_Data_centric_network/data_info.txt",
 
 data_total = np.zeros((4, 0))
 data_types = np.zeros((7, 3, 0))
-data_type_dist_1 = 1 / 7 * np.ones(7)
-data_type_dist_set = [data_type_dist_1]
+data_type_dist_set = np.zeros((8, 7))
+data_type_dist_set[0, :] = 1 / 7 * np.ones(7)
+data_type_dist_set[1, :] = np.array([1/3, 1/6, 1/6, 1/12, 1/12, 1/12, 1/12])
+data_type_dist_set[2, :] = np.array([1/2, 1/8, 1/8, 1/16, 1/16, 1/16, 1/16])
+data_type_dist_set[3, :] = np.array([1/4, 1/4, 1/4, 1/16, 1/16, 1/16, 1/16])
+data_type_dist_set[4, :] = np.array([1/4, 1/8, 1/8, 1/8, 1/8, 1/8, 1/8])
+data_type_dist_set[5, :] = np.array([2/3, 1/12, 1/12, 1/24, 1/24, 1/24, 1/24])
+data_type_dist_set[6, :] = np.array([1/6, 1/3, 1/3, 1/24, 1/24, 1/24, 1/24])
+data_type_dist_set[7, :] = np.array([1/6, 1/12, 1/12, 1/6, 1/6, 1/6, 1/6])
+
 layer_dic_1 = {0: [0, 1], 1: [0, 2], 2: [0, 1, 2], 3: [0, 1, 2, 3], 4: [0, 3], 5: [0, 2, 3], 6: [0, 1, 3]}
 layer_dic_set = [layer_dic_1 ]
 for data_type_dist in data_type_dist_set:
