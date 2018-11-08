@@ -1,5 +1,7 @@
 import numpy as np
 import math
+
+
 # Written by JS
 def barrier_method(arrival_rates, service_rates, delta, initial_a, eps1 = 1e-8, eps2 = 1e-8, t0 = 1, m = 1.1, alpha = 0.01, beta = 0.1):
     arrival_rates = np.array(arrival_rates, dtype=np.float64)

@@ -77,8 +77,8 @@ def network_simulation(data_type_dist, layer_dic):
 
 f1 = open("C:/Users/oe/PycharmProjects/ETRI_Data_centric_network/data_info.txt", 'w')
 
-data_type = np.array([[], [], [], []])
-data_total = np.ones((7, 3, 1))
+data_total = np.zeros((4, 0))
+data_types = np.zeros((7, 3, 0))
 data_type_dist_1 = 1 / 7 * np.ones(7)
 data_type_dist_set = [data_type_dist_1]
 layer_dic_1 = {0: [0, 1], 1: [0, 2], 2: [0, 1, 2], 3: [0, 1, 2, 3], 4: [0, 3], 5: [0, 2, 3], 6: [0, 1, 3]}
@@ -86,14 +86,14 @@ layer_dic_set = [layer_dic_1 ]
 for data_type_dist in data_type_dist_set:
     for layer_dic in layer_dic_set:
         result = network_simulation(data_type_dist, layer_dic)
-        temp_data_type_dist = data_type_dist.__str__() + "-----"
+        temp_data_type_dist = data_type_dist.__str__() + "\n"
         temp_layer_dic = layer_dic.__str__() + "\n"
         temp_data_info = temp_data_type_dist + temp_layer_dic
         temp_type_service_time = result[1]
-        data_total = np.append(data_type, result[0], axis = 1)
-        data_type = np.append(data_total, result[1], axis = 2)
+        data_total = np.append(data_total, result[0], axis = 1)
+        data_types = np.append(data_types, result[1], axis = 2)
         f1.write(temp_data_info)
 
 f1.close()
-np.save('Type_service_time.npy', data_type)
-np.save('Total_service_time.npy', data_total)
+np.save('Total_service_time_YR.npy', data_total)
+np.save('Type_service_time_YR.npy', data_types)

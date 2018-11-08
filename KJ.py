@@ -4,6 +4,7 @@ from numpy.random import uniform
 import math
 import random
 
+
 # Written by KJ
 def grad_projected(arrival_rates, service_rates, delta, initial_a):
     prsc = 'float64'
