@@ -228,7 +228,6 @@ def legacy_optimal_routing(locations):
 
 def bandwidth_efficiency(vol_dec, data_type_dist, layer_dic, source_rates):
     """
-
     :param vol_dec: (array), volume decrease ratio after processing in each layer
     :param data_type_dist: (array), data type distribution
     :param layer_dic: (dictionary), required layer info for each data type
@@ -265,3 +264,28 @@ def bandwidth_efficiency_compare(data_type_dist, source_rates, vol_dec=np.array(
     b_e_in_network_processing = bandwidth_efficiency(vol_dec, data_type_dist, layer_dic, source_rates)
     res = b_e_in_network_processing / b_e_legacy
     return res
+
+
+def avg_last_layer(data_type_dist):
+    """
+    :param data_type_dist: (array), data type distribution
+    :return: res, average last layer
+    """
+    layer_dic = {0: [0, 1], 1: [0, 2], 2: [0, 1, 2], 3: [0, 1, 2, 3], 4: [0, 3], 5: [0, 2, 3], 6: [0, 1, 3]}
+    temp = list(layer_dic.values())
+    temp_max = np.array([max(temp[i]) for i in range(len(data_type_dist))])
+    res = np.dot(data_type_dist, temp_max)
+    return res
+
+
+def avg_sum_required_layer(data_type_dist):
+    """
+    :param data_type_dist: (array), data type distribution
+    :return: res, expected sum of the required layers
+    """
+    layer_dic = {0: [0, 1], 1: [0, 2], 2: [0, 1, 2], 3: [0, 1, 2, 3], 4: [0, 3], 5: [0, 2, 3], 6: [0, 1, 3]}
+    temp = list(layer_dic.values())
+    temp_sum = np.array([sum(temp[i]) for i in range(len(data_type_dist))])
+    res = np.dot(data_type_dist, temp_sum)
+    return res
+
