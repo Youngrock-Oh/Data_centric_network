@@ -210,3 +210,20 @@ def valid_initial_rates(source_rates, server_rates, para):
     # print(server_rates - source_rates) # to check validity
     return initial_a
 
+
+def legacy_optimal_routing(locations):
+    """
+    :param locations: corrdintates info for spatial distribution of nodes in the network
+    :return: a, (list that consists of arrays) the optimal routing probability in the legacy network
+    """
+    layer_num = len(locations)
+    a = [np.zeros((len(locations[i]), len(locations[i + 1]))) for i in range(layer_num - 1)]
+    for i in range(layer_num - 1):
+        for j in range(len(locations[i])):
+            delay_info = [delay(locations[i][j], locations[i + 1][k]) for k in range(len(locations[i + 1]))]
+            min_delay_index = np.argmin(delay_info)
+            a[i][j][min_delay_index] = 1
+    return a
+
+
+# def bandwidth_efficiency(a, vol_dec, data_type_dist, layer_dic, rates)

@@ -43,7 +43,7 @@ def network_simulation(data_type_dist, layer_dic):
         elif case_num == 2:
             res_A[case_num] = ar.grad_multi_layers(rates, delta, layer_dic, data_type_dist, vol_dec)
         else:
-            res_A[case_num] = initial_a
+            res_A[case_num] = ar.legacy_optimal_routing(locations)
             data_type_dist = np.array([1])
             vol_dec = np.array([1, 1, 1, 1])
             layer_dic = {0: [0, 3]}
