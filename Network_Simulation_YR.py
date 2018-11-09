@@ -4,7 +4,7 @@ import time
 import Analytic_res as ar
 
 
-def network_simulation(data_type_dist, layer_dic):
+def network_simulation(data_type_dist):
     start_time = time.time()
     result1 = np.array([])
     result2 = np.array([[], [], [], [], [], [], []])
@@ -19,22 +19,21 @@ def network_simulation(data_type_dist, layer_dic):
     loc_3 = [[0, 0]]
     locations = [loc_0, loc_1, loc_2, loc_3]
     # data type distribution and layer_dic
-    # data_type_dist = 1 / 7 * np.ones(7)
     vol_dec = np.array([1, 0.8, 0.8, 1])
-    # layer_dic = {0: [0, 1], 1: [0, 2], 2: [0, 1, 2], 3: [0, 1, 2, 3], 4: [0, 3], 5: [0, 2, 3], 6: [0, 1, 3]}
+    layer_dic = {0: [0, 1], 1: [0, 2], 2: [0, 1, 2], 3: [0, 1, 2, 3], 4: [0, 3], 5: [0, 2, 3], 6: [0, 1, 3]}
     delta = [np.zeros((len(locations[i]), len(locations[i + 1]))) for i in range(len(rates) - 1)]
     for i in range(len(rates) - 1):
         delta[i] = ar.delay_return(locations[i], locations[i + 1])
     initial_a = [np.ones((len(locations[i]), len(locations[i + 1]))) / len(locations[i + 1]) for i in
                  range(len(rates) - 1)]
     delta_2 = delta + [np.zeros((4, 1))]
-    simulation_time = 1000  # sec
+    simulation_time = 1  # sec
     t = 0
     simulation_cases = {0: "Uniform routing", 1: "Barrier method", 2: "Projected gradient method", 3: "Legacy"}
     simulation_service_time = np.zeros(4)
     res_A = [[], [], [], []]
-    print("---------Data type distribution: ", data_type_dist)
-    print("---------Layer dic: ", layer_dic)
+    print("-----Data type distribution: ", data_type_dist)
+    print("-----Layer dic: ", layer_dic)
     for case_num, case in simulation_cases.items():
         if case_num == 0:
             res_A[case_num] = initial_a
@@ -45,8 +44,8 @@ def network_simulation(data_type_dist, layer_dic):
         else:
             res_A[case_num] = ar.legacy_optimal_routing(locations)
             data_type_dist = np.array([1])
-            vol_dec = np.array([1, 1, 1, 1])
-            layer_dic = {0: [0, 3]}
+            vol_dec = np.ones(len(vol_dec))
+            layer_dic = {0: [0, len(vol_dec) - 1]}
 
         A_2 = res_A[case_num] + [np.zeros((4, 1))]
         cur_network = NC.Network(rates, data_type_dist, layer_dic, delta_2, A_2, vol_dec)
@@ -75,7 +74,6 @@ def network_simulation(data_type_dist, layer_dic):
 
 
 f1 = open("C:/Users/oe/PycharmProjects/ETRI_Data_centric_network/data_info.txt", 'w')
-
 data_total = np.zeros((4, 0))
 data_types = np.zeros((7, 3, 0))
 data_type_dist_set = np.zeros((8, 7))
@@ -87,20 +85,21 @@ data_type_dist_set[4, :] = np.array([1/4, 1/8, 1/8, 1/8, 1/8, 1/8, 1/8])
 data_type_dist_set[5, :] = np.array([2/3, 1/12, 1/12, 1/24, 1/24, 1/24, 1/24])
 data_type_dist_set[6, :] = np.array([1/6, 1/3, 1/3, 1/24, 1/24, 1/24, 1/24])
 data_type_dist_set[7, :] = np.array([1/6, 1/12, 1/12, 1/6, 1/6, 1/6, 1/6])
-
-layer_dic_1 = {0: [0, 1], 1: [0, 2], 2: [0, 1, 2], 3: [0, 1, 2, 3], 4: [0, 3], 5: [0, 2, 3], 6: [0, 1, 3]}
-layer_dic_set = [layer_dic_1 ]
-for data_type_dist in data_type_dist_set:
-    for layer_dic in layer_dic_set:
-        result = network_simulation(data_type_dist, layer_dic)
-        temp_data_type_dist = data_type_dist.__str__() + "\n"
-        temp_layer_dic = layer_dic.__str__() + "\n"
-        temp_data_info = temp_data_type_dist + temp_layer_dic
-        temp_type_service_time = result[1]
-        data_total = np.append(data_total, result[0], axis = 1)
-        data_types = np.append(data_types, result[1], axis = 2)
-        f1.write(temp_data_info)
+rates_0 = np.array([30 + 20 * (i // 5) for i in range(25)])
+index = 1
+data_b_e = np.zeros(0)
+for cur_data_type_dist in data_type_dist_set:
+    print("Case %d" % index)
+    result = network_simulation(cur_data_type_dist)
+    temp_data_info = cur_data_type_dist.__str__() + "\n"
+    temp_b_e = ar.bandwidth_efficiency_compare(cur_data_type_dist, rates_0)
+    data_b_e = np.append(data_b_e, temp_b_e)
+    data_total = np.append(data_total, result[0], axis=1)
+    data_types = np.append(data_types, result[1], axis=2)
+    f1.write(temp_data_info)
+    index += 1
 
 f1.close()
+np.save('Bandwidth_efficiency.npy', data_b_e)
 np.save('Total_service_time_YR.npy', data_total)
 np.save('Type_service_time_YR.npy', data_types)

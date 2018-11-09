@@ -226,4 +226,42 @@ def legacy_optimal_routing(locations):
     return a
 
 
-# def bandwidth_efficiency(a, vol_dec, data_type_dist, layer_dic, rates)
+def bandwidth_efficiency(vol_dec, data_type_dist, layer_dic, source_rates):
+    """
+
+    :param vol_dec: (array), volume decrease ratio after processing in each layer
+    :param data_type_dist: (array), data type distribution
+    :param layer_dic: (dictionary), required layer info for each data type
+    :param source_rates: (array), source rates in the network
+    :return: res, bandwidth efficiency which is proportion to the product of rate and data volume
+    """
+    layer_num = len(vol_dec)
+    res = 0
+    data_num = len(data_type_dist)
+    for l in range(layer_num - 1):
+        departure_process_rate = sum(source_rates)
+        temp_dist = np.zeros(data_num)
+        for i in range(data_num):
+            if max(layer_dic[i]) > l:
+                temp_dist[i] = data_type_dist[i]
+        avg_data_vol = np.dot(1/cur_vol(l, layer_dic, vol_dec), temp_dist)
+        res += departure_process_rate * avg_data_vol
+    return res
+
+
+def bandwidth_efficiency_compare(data_type_dist, source_rates, vol_dec=np.array([1, 0.8, 0.8, 1])):
+    """
+    :param data_type_dist: (array), data type distribution
+    :param source_rates: (array), source rates in the network
+    :param vol_dec: (array), volume decrease ratio after processing in each layer
+    :return: res, ratio of bandwidth usages between in-network processing and legacy networks
+    """
+    layer_dic = {0: [0, 1], 1: [0, 2], 2: [0, 1, 2], 3: [0, 1, 2, 3], 4: [0, 3], 5: [0, 2, 3], 6: [0, 1, 3]}
+    layer_num = len(vol_dec)
+    legacy_vol_dec = np.ones(layer_num)
+    legacy_data_type_dist = np.array([1])
+    legacy_layer_dic = {0: [0, layer_num - 1]}
+    b_e_legacy = bandwidth_efficiency(legacy_vol_dec, legacy_data_type_dist, legacy_layer_dic, source_rates)
+    b_e_in_network_processing = bandwidth_efficiency(vol_dec, data_type_dist, layer_dic, source_rates)
+    res = b_e_in_network_processing / b_e_legacy
+    return res

@@ -1,10 +1,7 @@
 from Analytic_res import *
-
-loc_0 = [[-12 + 6 * i, -12 + 6 * j] for i in range(5) for j in range(5)]
-loc_1 = [[-8 + 8 * i, -8 + 8 * j] for i in range(3) for j in range(3)]
-loc_2 = [[-6 + 12 * i, -6 + 12 * j] for i in range(2) for j in range(2)]
-loc_3 = [[0, 0]]
-locations = [loc_0, loc_1, loc_2, loc_3]
-
-a = legacy_optimal_routing(locations)
-print(a)
+source_rates = np.array([5, 5])
+vol_dec = [1, 0.5, 1]
+layer_dic = {0: [0, 1, 2], 1: [0, 1]}
+data_type_dist = np.ones(2) / 2
+res = bandwidth_efficiency(vol_dec, data_type_dist, layer_dic, source_rates)
+print(res)
