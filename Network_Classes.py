@@ -3,15 +3,8 @@ from numpy.random import exponential
 from numpy.random import choice
 import numpy as np
 
+
 # example for layer_dic: layer_dic = {0: [0, 1, 2, 3], 1: [0, 1, 2], 2: [0, 1], 3: [0, 2, 3], 4: [0, 3]}
-c = 3e5  # km / sec
-
-
-# Return path delay between two nodes
-def delay(node_1, node_2):
-    x = node_2.loc[0] - node_1.loc[0]
-    y = node_2.loc[1] - node_1.loc[1]
-    return sqrt(x * x + y * y) / c
 
 
 # Class "Data": type, need_layers, cur_node, next_node
@@ -139,7 +132,7 @@ class Network:
                         sending_node.spent_time(close_service_time)
                     if l == sending_index[0] and i == sending_index[1]:
                         sending_data = sending_node.data_stack[0]
-                        sending_data.rate_factor = sending_data.rate_factor * self.vol_dec[l]
+                        sending_data.rate_factor = sending_data.rate_factor * self.vol_dec[sending_data.type, l]
                         if l < max(sending_data.need_layers):  # the data must be transferred to the next layer
                             next_index = choice(len(sending_node.routing_P), 1, True, sending_node.routing_P)
                             next_index = int(next_index)  # convert numpy.ndarray to int
@@ -168,7 +161,7 @@ class Network:
             self.avg_completion_time_types = self.Net_completion_time_type / self.Num_completed_data_type
 
 
-class Medium:    # Class "Medium": corresponding to the transmission events
+class Medium:  # Class "Medium": corresponding to the transmission events
     def __init__(self):
         self.data_stack = []  # [Data, next_node], list
         self.delay_time = []  # delay time
