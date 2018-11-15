@@ -131,7 +131,7 @@ class Network:
                         sending_node.spent_time(close_service_time)
                     if l == sending_index[0] and i == sending_index[1]:
                         sending_data = sending_node.data_stack[0]
-                        sending_data.rate_factor = sending_data.rate_factor * self.vol_dec[sending_data.type, l]
+                        sending_data.rate_factor *= self.vol_dec[sending_data.type, l]
                         if l < max(sending_data.need_layers):  # the data must be transferred to the next layer
                             next_index = choice(len(sending_node.routing_P), 1, True, sending_node.routing_P)
                             next_index = int(next_index)  # convert numpy.ndarray to int
@@ -242,4 +242,38 @@ def network_simulation(rates, locations, data_type_dist, vol_dec, layer_dic):
     result2 = result2.reshape((7, 3, 1))
     res = [result1, result2]
     print("--- %s seconds ---" % (time.time() - start_time))
+    return res
+
+
+def task_convert_input(data_task, task_vol_dec, layer_task):
+    """
+    :param data_task: dictionary, represents required task for each data type
+    :param task_vol_dec: dictionary, represents volume decrement after each task type
+    :param layer_task: dictionary, represents involved task types for each layer
+    :return: rate_factor: vol_dec to calculate effective rates,
+    vol_dec: actual volume of the data used to calculate bandwidth efficiency,
+    layer_dic: required layer index for each data type
+    """
+    # get rate_factor
+    # get vol_dec
+    data_num = len(data_task)
+    layer_num = len(layer_task)
+    rate_factor = np.ones((data_num, layer_num))
+    vol_dec = np.ones((data_num, layer_num))
+    layer_dic = {}
+    for i in range(data_num):
+        temp_task_set = set(data_task[i])
+        temp_layer_set = [0]
+        for l in range(1, layer_num):
+            temp_layer_task_set = set(layer_task[l])
+            processing_task_set = temp_layer_task_set & temp_task_set
+            if processing_task_set:
+                temp_layer_set.append(l)
+                for task in processing_task_set:
+                    vol_dec[i, l] *= task_vol_dec[task]
+
+        layer_dic[i] = temp_layer_set
+        # find involved task
+        # find involved layer
+    res = [rate_factor, vol_dec, layer_dic]
     return res
