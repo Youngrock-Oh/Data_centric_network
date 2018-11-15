@@ -1,6 +1,5 @@
 from math import sqrt
 import numpy as np
-from numpy.random import uniform
 from KJ import grad_projected
 from JS import barrier_method
 
@@ -71,43 +70,6 @@ def analytic_avg_delay(rates, delta, routing_p, vol_dec):
     return res_sum
 
 
-def uniform_random_network(net_region_width, net_region_height, layer_num, node_num, avg_rate_source_node):
-    """
-    Inputs:
-    net_region_width, net_region_height (km),
-    layer_num: # of layers (int)
-    node_num: # of servers in each layer (list)
-    avg_rate_source_node (float)
-    Construct locations using PPP
-    Construct rates using rate_margin and rate_sigma and uniform distribution
-    Construct routing probability - uniform
-    Outputs: locations, rates, routing probability A
-    """
-    locations = [[] for i in range(layer_num)]
-    # rate parameters
-    rates = [[] for i in range(layer_num)]
-    avg_rate_layer = [[] for i in range(layer_num)]  # avg rate of a server in the layer
-    avg_rate_layer[0] = avg_rate_source_node
-    rate_margin = 0.8
-    rate_sigma = 0.2
-    for i in range(1, layer_num):
-        avg_rate_layer[i] = node_num[i - 1] * avg_rate_layer[i - 1] / node_num[i] / rate_margin
-    # Uniform routing probability A
-    A = [[] for i in range(layer_num)]
-    for i in range(layer_num - 1):
-        A[i] = np.ones((node_num[i], node_num[i + 1])) / node_num[i + 1]
-    A[layer_num - 1] = np.zeros((node_num[layer_num - 1], node_num[layer_num - 1]))
-    # Construct locations, rates
-    for i in range(layer_num):
-        for j in range(node_num[i]):
-            x = uniform(-net_region_width / 2, net_region_width / 2)
-            y = uniform(-net_region_height / 2, net_region_height / 2)
-            rate = uniform(avg_rate_layer[i] * (1. - rate_sigma), avg_rate_layer[i] * (1. + rate_sigma))
-            locations[i].append([x, y])
-            rates[i].append(rate)
-    return [locations, rates, A]
-
-
 def no_delay_optimal(arrival_rates, service_rates):
     '''
     	Find the optimal completion time using Lagrange multiplier for a network without propagation delays
@@ -162,9 +124,12 @@ def grad_multi_layers(rates, delta, layer_dic, data_type_dist, vol_dec):
         eff_rates = effective_rates(temp_arr_rates, temp_ser_rates, l, layer_dic, data_type_dist, vol_dec)
         eff_arr_rates = eff_rates[0]
         eff_ser_rates = eff_rates[1]
-        initial_a = valid_initial_rates(eff_arr_rates, eff_ser_rates, 0.9)
-        temp_res = grad_projected(eff_arr_rates, eff_ser_rates, delta[l], initial_a)
-        temp_a = temp_res['A']
+        if sum(eff_arr_rates) == 0:  # just passing through the layer
+            temp_a = np.ones((len(eff_arr_rates), len(eff_ser_rates))) / len(eff_ser_rates)
+        else:
+            initial_a = valid_initial_rates(eff_arr_rates, eff_ser_rates, 0.9)
+            temp_res = grad_projected(eff_arr_rates, eff_ser_rates, delta[l], initial_a)
+            temp_a = temp_res['A']
         optimal_a.append(temp_a)
         source_rates = np.matmul(source_rates, temp_a)
     last_layer_num = len(rates[layer_num - 2])
@@ -182,9 +147,12 @@ def barrier_multi_layers(rates, delta, layer_dic, data_type_dist, vol_dec):
         eff_rates = effective_rates(temp_arr_rates, temp_ser_rates, l, layer_dic, data_type_dist, vol_dec)
         eff_arr_rates = eff_rates[0]
         eff_ser_rates = eff_rates[1]
-        initial_a = valid_initial_rates(eff_arr_rates, eff_ser_rates, 0.9)
-        temp_res = barrier_method(eff_arr_rates, eff_ser_rates, delta[l], initial_a)
-        temp_a = temp_res['A']
+        if sum(eff_arr_rates) == 0:  # just passing through the layer
+            temp_a = np.ones((len(eff_arr_rates), len(eff_ser_rates))) / len(eff_ser_rates)
+        else:
+            initial_a = valid_initial_rates(eff_arr_rates, eff_ser_rates, 0.9)
+            temp_res = barrier_method(eff_arr_rates, eff_ser_rates, delta[l], initial_a)
+            temp_a = temp_res['A']
         optimal_a.append(temp_a)
         source_rates = np.matmul(source_rates, temp_a)
     last_layer_num = len(rates[layer_num - 2])

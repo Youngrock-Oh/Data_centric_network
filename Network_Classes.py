@@ -202,9 +202,10 @@ def network_simulation(rates, locations, data_type_dist, vol_dec, layer_dic):
         delta[i] = ar.delay_return(locations[i], locations[i + 1])
     initial_a = [np.ones((len(locations[i]), len(locations[i + 1]))) / len(locations[i + 1]) for i in
                  range(len(rates) - 1)]
-    delta_2 = delta + [np.zeros((4, 1))]
-    simulation_time = 10  # sec
-    simulation_cases = {0: "Uniform routing", 1: "Barrier method", 2: "Projected gradient method", 3: "Legacy"}
+    delta_2 = delta + [np.zeros(1)]
+    simulation_time = 1000  # sec
+    # simulation_cases = {0: "Uniform routing", 1: "Barrier method", 2: "Projected gradient method", 3: "Legacy"}
+    simulation_cases = {0: "Uniform routing", 1: "Barrier method", 2: "Projected gradient method"}
     simulation_service_time = np.zeros(4)
     res_a = [[], [], [], []]
     print("-----Data type distribution: ", data_type_dist)
@@ -216,13 +217,13 @@ def network_simulation(rates, locations, data_type_dist, vol_dec, layer_dic):
             res_a[case_num] = ar.barrier_multi_layers(rates, delta, layer_dic, data_type_dist, vol_dec)
         elif case_num == 2:
             res_a[case_num] = ar.grad_multi_layers(rates, delta, layer_dic, data_type_dist, vol_dec)
-        else:
-            res_a[case_num] = ar.legacy_optimal_routing(locations)
-            data_type_dist = np.array([1])
-            vol_dec = np.ones(len(rates))
-            layer_dic = {0: [0, len(rates) - 1]}
+        # else:
+            # res_a[case_num] = ar.legacy_optimal_routing(locations)
+            # data_type_dist = np.array([1])
+            # vol_dec = np.ones(len(data_type_dist), len(rates))
+            # layer_dic = {0: [0, len(rates) - 1]}
 
-        A_2 = res_a[case_num] + [np.zeros((4, 1))]
+        A_2 = res_a[case_num] + [np.zeros((len(rates[-2]), 1))]
         cur_network = Network(rates, data_type_dist, layer_dic, delta_2, A_2, vol_dec)
         cur_time = 0
         while cur_time < simulation_time:
@@ -237,9 +238,9 @@ def network_simulation(rates, locations, data_type_dist, vol_dec, layer_dic):
         print('Completion time for each data type: ', cur_network.avg_completion_time_types)
         result1 = np.append(result1, simulation_service_time[case_num])
         if case_num != 3:
-            result2 = np.append(result2, cur_network.avg_completion_time_types.reshape((7, 1)), axis=1)
-    result1 = result1.reshape((4, 1))
-    result2 = result2.reshape((7, 3, 1))
+            result2 = np.append(result2, cur_network.avg_completion_time_types.reshape((len(data_type_dist), 1)), axis=1)
+    result1 = result1.reshape((len(simulation_cases), 1))
+    result2 = result2.reshape((len(data_type_dist), 3, 1))
     res = [result1, result2]
     print("--- %s seconds ---" % (time.time() - start_time))
     return res
