@@ -1,7 +1,7 @@
 import numpy as np
 import Network_Classes as NC
 import Analytic_res as ar
-f1 = open("C:/Users/oe/PycharmProjects/ETRI_Data_centric_network/data_info_practical.txt", 'w')
+f1 = open("C:/Users/oe/PycharmProjects/ETRI_Data_centric_network/data_info.txt", 'w')
 data_total = np.zeros((4, 0))
 data_types = np.zeros((7, 3, 0))
 # data type distribution and layer_dic
