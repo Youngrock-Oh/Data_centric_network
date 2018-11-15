@@ -12,12 +12,12 @@ class Data:
         """
         data_type: (int) data type
         layer_dic: (dict) required layer index
-        rate_factor: (float) mean service time = 1/server_rate * rate_factor
+        cur_vol: (float) mean service time = 1/server_rate * cur_vol
         This reflects the fact that the volume of the data decreases after processing and it changes the service time
         """
         self.type = data_type
         self.need_layers = layer_dic.get(data_type)
-        self.rate_factor = 1
+        self.cur_vol = 1
         self.spending_time = 0
 
 
@@ -51,7 +51,7 @@ class Node:
             self.add_data(new_data)
         else:  # Server just transfers the data
             if self.data_stack:
-                self.remaining_time = self.data_stack[0].rate_factor * exponential(1 / self.rate)
+                self.remaining_time = self.data_stack[0].cur_vol * exponential(1 / self.rate)
             else:
                 self.remaining_time = []
 
@@ -61,7 +61,7 @@ class Node:
             self.data_stack.insert(0, data)
         elif not self.data_stack:
             self.data_stack.append(data)
-            self.remaining_time = data.rate_factor * exponential(1 / self.rate)
+            self.remaining_time = data.cur_vol * exponential(1 / self.rate)
         else:  # Add the data to data_stack
             self.data_stack.append(data)
 
@@ -131,7 +131,7 @@ class Network:
                         sending_node.spent_time(close_service_time)
                     if l == sending_index[0] and i == sending_index[1]:
                         sending_data = sending_node.data_stack[0]
-                        sending_data.rate_factor *= self.vol_dec[sending_data.type, l]
+                        sending_data.cur_vol *= self.vol_dec[sending_data.type, l]
                         if l < max(sending_data.need_layers):  # the data must be transferred to the next layer
                             next_index = choice(len(sending_node.routing_P), 1, True, sending_node.routing_P)
                             next_index = int(next_index)  # convert numpy.ndarray to int
@@ -143,7 +143,7 @@ class Network:
                             if not sending_node.data_stack:
                                 sending_node.remaining_time = []
                             elif sending_node.data_stack[0].need_layers.count(l) > 0:
-                                sending_node.remaining_time = sending_node.data_stack[0].rate_factor * \
+                                sending_node.remaining_time = sending_node.data_stack[0].cur_vol * \
                                                               exponential(1 / sending_node.rate)
                             else:
                                 sending_node.remaining_time = 0
@@ -250,7 +250,7 @@ def task_convert_input(data_task, task_vol_dec, layer_task):
     :param data_task: dictionary, represents required task for each data type
     :param task_vol_dec: dictionary, represents volume decrement after each task type
     :param layer_task: dictionary, represents involved task types for each layer
-    :return: rate_factor: vol_dec to calculate effective rates,
+    :return: rate_factor: used to calculate effective rates,
     vol_dec: actual volume of the data used to calculate bandwidth efficiency,
     layer_dic: required layer index for each data type
     """
@@ -269,8 +269,13 @@ def task_convert_input(data_task, task_vol_dec, layer_task):
             processing_task_set = temp_layer_task_set & temp_task_set
             if processing_task_set:
                 temp_layer_set.append(l)
+                temp_vol_dec_set = []
                 for task in processing_task_set:
                     vol_dec[i, l] *= task_vol_dec[task]
+                    temp_vol_dec_set.append(task_vol_dec[task])
+                temp_vol_dec_set = np.array(temp_vol_dec_set)
+                for j in range(1, len(processing_task_set)):
+                    rate_factor[i, l] += np.prod(temp_vol_dec_set[:j])
 
         layer_dic[i] = temp_layer_set
         # find involved task
