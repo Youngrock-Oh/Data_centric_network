@@ -260,6 +260,7 @@ def task_convert_input(data_task, task_vol_dec, layer_task):
     layer_num = len(layer_task)
     rate_factor = np.ones((data_num, layer_num))
     vol_dec = np.ones((data_num, layer_num))
+    temp_rate_factor = np.ones((data_num, layer_num))
     layer_dic = {}
     for i in range(data_num):
         temp_task_set = set(data_task[i])
@@ -275,10 +276,9 @@ def task_convert_input(data_task, task_vol_dec, layer_task):
                     temp_vol_dec_set.append(task_vol_dec[task])
                 temp_vol_dec_set = np.array(temp_vol_dec_set)
                 for j in range(1, len(processing_task_set)):
-                    rate_factor[i, l] += np.prod(temp_vol_dec_set[:j])
-
+                    temp_rate_factor[i, l] += np.prod(temp_vol_dec_set[:j])
         layer_dic[i] = temp_layer_set
-        # find involved task
-        # find involved layer
+        for l in range(layer_num - 1):
+            rate_factor[i, l] = temp_rate_factor[i, l + 1] * vol_dec[i, l] / temp_rate_factor[i, l]
     res = [rate_factor, vol_dec, layer_dic]
     return res
