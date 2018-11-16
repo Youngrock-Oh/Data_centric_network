@@ -1,17 +1,17 @@
 import numpy as np
 import Network_Classes as NC
 import Analytic_res as ar
-f1 = open("C:/Users/oe/PycharmProjects/ETRI_Data_centric_network/data_info_practical.txt", 'w')
+f1 = open("C:/Users/oe/PycharmProjects/ETRI_Data_centric_network/data_info_practical_1.txt", 'w')
 data_total = np.zeros((3, 0))
 # data and task configuration
-data_task_c = {0: ["T1", "T2"], 1: ["T2", "T3"], 2: ["T3", "T4"]}
+data_task_c = {0: ["T1"], 1: ["T2"], 2: ["T3"], 3: ["T4"]}
 task_vol_dec_c = {"T1": 1 / 2, "T2": 1 / 2, "T3": 1 / 2, "T4": 1 / 2}
-data_type_dist = np.array([1/3, 1/3, 1/3])
+data_type_dist = np.array([1/4, 1/4, 1/4, 1/4])
 # Network configuration
 rates_0 = np.array([30 + 10 * (i // 5) for i in range(25)])
-rates_1 = np.array([200 + 50 * (i // 4) for i in range(16)])
-rates_2 = np.array([300 + 100 * (i // 3) for i in range(9)])
-rates_3 = np.array([500, 600, 700, 800])
+rates_1 = np.array([250 + 50 * (i // 4) for i in range(16)])
+rates_2 = np.array([350 + 100 * (i // 3) for i in range(9)])
+rates_3 = np.array([700, 800, 900, 1000])
 rates_4 = np.array([2000])
 rates_input = [rates_0, rates_1, rates_2, rates_3, rates_4]
 
@@ -40,13 +40,14 @@ for case_index in range(simul_case_num):
     layer_dic_input = res[2]
     result = NC.network_simulation(rates_input, locations_input, data_type_dist, rate_factor_input, layer_dic_input)
     temp_data_info = layer_task_c.__str__() + "\n"
-    temp_b_e = ar.bandwidth_efficiency_compare(data_type_dist, rates_0, layer_dic_input, vol_dec_input)
+    temp_b_e = ar.bandwidth_efficiency(vol_dec_input, data_type_dist, layer_dic_input, rates_0)
     temp_metric = ar.avg_sum_required_layer(data_type_dist, layer_dic_input)
     temp_b_e_data = np.array([temp_b_e, temp_metric]).reshape((2, 1))
     data_bandwidth_efficiency = np.append(data_bandwidth_efficiency, temp_b_e_data, axis=1)
     data_total = np.append(data_total, result[0], axis=1)
     f1.write(temp_data_info)
-
+f1.write(rates_input.__str__() + "\n")
+f1.write(data_task_c.__str__())
 f1.close()
-np.save('Bandwidth_efficiency_practical.npy', data_bandwidth_efficiency)
-np.save('Total_service_time_YR_practical.npy', data_total)
+np.save('Bandwidth_efficiency_practical_1.npy', data_bandwidth_efficiency)
+np.save('Total_service_time_YR_practical_1.npy', data_total)
