@@ -11,7 +11,7 @@ data_type_dist = np.array([1/3, 1/3, 1/3])
 rates_0 = np.array([30 + 10 * (i // 5) for i in range(25)])
 rates_1 = np.array([200 + 50 * (i // 4) for i in range(16)])
 rates_2 = np.array([300 + 100 * (i // 3) for i in range(9)])
-rates_3 = np.array([600, 700, 800, 900])
+rates_3 = np.array([500, 600, 700, 800])
 rates_4 = np.array([2000])
 rates_input = [rates_0, rates_1, rates_2, rates_3, rates_4]
 
