@@ -1,7 +1,7 @@
 import numpy as np
 import Network_Classes as NC
 import Analytic_res as ar
-f1 = open("C:/Users/oe/PycharmProjects/ETRI_Data_centric_network/data_info.txt", 'w')
+f1 = open("C:/Users/oe/PycharmProjects/ETRI_Data_centric_network/data_info_2.txt", 'w')
 data_total = np.zeros((4, 0))
 data_types = np.zeros((7, 3, 0))
 # data type distribution and layer_dic
@@ -29,14 +29,13 @@ loc_1 = [[-8 + 8 * i, -8 + 8 * j] for i in range(3) for j in range(3)]
 loc_2 = [[-6 + 12 * i, -6 + 12 * j] for i in range(2) for j in range(2)]
 loc_3 = [[0, 0]]
 locations_input = [loc_0, loc_1, loc_2, loc_3]
-source_rates = np.array([30 + 20 * (i // 5) for i in range(25)])
 index = 1
 data_bandwidth_efficiency = np.zeros((2, 0))
 for cur_data_type_dist in data_type_dist_set:
     print("Case %d" % index)
     result = NC.network_simulation(rates_input, locations_input, cur_data_type_dist, vol_dec_input, layer_dic_input)
     temp_data_info = cur_data_type_dist.__str__() + "\n"
-    temp_b_e = ar.bandwidth_efficiency_compare(cur_data_type_dist, source_rates, layer_dic_input, vol_dec_input)
+    temp_b_e = ar.bandwidth_efficiency_compare(cur_data_type_dist, rates_0, layer_dic_input, vol_dec_input)
     temp_metric = ar.avg_sum_required_layer(cur_data_type_dist, layer_dic_input)
     temp_b_e_data = np.array([temp_b_e, temp_metric]).reshape((2, 1))
     data_bandwidth_efficiency = np.append(data_bandwidth_efficiency, temp_b_e_data, axis=1)
@@ -46,6 +45,6 @@ for cur_data_type_dist in data_type_dist_set:
     index += 1
 
 f1.close()
-np.save('Bandwidth_efficiency.npy', data_bandwidth_efficiency)
-np.save('Total_service_time_YR.npy', data_total)
-np.save('Type_service_time_YR.npy', data_types)
+np.save('Bandwidth_efficiency_2.npy', data_bandwidth_efficiency)
+np.save('Total_service_time_YR_2.npy', data_total)
+np.save('Type_service_time_YR_2.npy', data_types)
