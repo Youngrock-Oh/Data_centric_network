@@ -203,7 +203,7 @@ def network_simulation(rates, locations, data_type_dist, vol_dec, layer_dic):
     initial_a = [np.ones((len(locations[i]), len(locations[i + 1]))) / len(locations[i + 1]) for i in
                  range(len(rates) - 1)]
     delta_2 = delta + [np.zeros(1)]
-    simulation_time = 1000  # sec
+    simulation_time = 100  # sec
     # simulation_cases = {0: "Uniform routing", 1: "Barrier method", 2: "Projected gradient method", 3: "Legacy"}
     simulation_cases = {0: "Uniform routing", 1: "Barrier method", 2: "Projected gradient method"}
     simulation_service_time = np.zeros(4)
