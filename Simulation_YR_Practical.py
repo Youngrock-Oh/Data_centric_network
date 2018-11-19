@@ -1,8 +1,8 @@
 import numpy as np
 import Network_Classes as NC
 import Analytic_res as ar
-f1 = open("C:/Users/oe/PycharmProjects/ETRI_Data_centric_network/data_info_practical_1.txt", 'w')
-data_total = np.zeros((3, 0))
+f1 = open("C:/Users/oe/PycharmProjects/ETRI_Data_centric_network/data_info_practical_3.txt", 'w')
+data_total = np.zeros((4, 0))
 # data and task configuration
 data_task_c = {0: ["T1"], 1: ["T2"], 2: ["T3"], 3: ["T4"]}
 task_vol_dec_c = {"T1": 1 / 2, "T2": 1 / 2, "T3": 1 / 2, "T4": 1 / 2}
@@ -49,5 +49,5 @@ for case_index in range(simul_case_num):
 f1.write(rates_input.__str__() + "\n")
 f1.write(data_task_c.__str__())
 f1.close()
-np.save('Bandwidth_efficiency_practical_1.npy', data_bandwidth_efficiency)
-np.save('Total_service_time_YR_practical_1.npy', data_total)
+np.save('Bandwidth_efficiency_practical_3.npy', data_bandwidth_efficiency)
+np.save('Total_service_time_YR_practical_3.npy', data_total)
