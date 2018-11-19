@@ -205,15 +205,17 @@ def bandwidth_efficiency(vol_dec, data_type_dist, layer_dic, source_rates):
     layer_num = np.size(vol_dec, axis=1)
     res = 0
     data_type_num = len(data_type_dist)
+    departure_process_rate = sum(source_rates)
     for l in range(layer_num - 1):
-        departure_process_rate = sum(source_rates)
         temp_dist = np.zeros(data_type_num)
         for i in range(data_type_num):
-            if max(layer_dic[i]) > l:
+            temp_max_layer = max(layer_dic[i])
+            if temp_max_layer > l:
                 temp_dist[i] = data_type_dist[i]
-        avg_data_vol = np.dot(cur_vol(l, layer_dic, vol_dec), temp_dist)
-        res += departure_process_rate * avg_data_vol
-    return res
+        cur_vol_temp = cur_vol(l, layer_dic, vol_dec)
+        avg_data_vol = np.dot(cur_vol_temp, temp_dist)
+        res += avg_data_vol
+    return departure_process_rate * res
 
 
 def bandwidth_efficiency_compare(data_type_dist, source_rates, layer_dic, vol_dec):
