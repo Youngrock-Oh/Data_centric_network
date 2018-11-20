@@ -207,8 +207,7 @@ def network_simulation(rates, locations, data_type_dist, data_task, task_vol_dec
                  range(len(rates) - 1)]
     delta_2 = delta + [np.zeros(1)]
     simulation_time = 100  # sec
-    # simulation_cases = {0: "Uniform routing", 1: "Barrier method", 2: "Projected gradient method", 3: "Legacy"}
-    simulation_cases = {3: "Legacy"}
+    simulation_cases = {0: "Uniform routing", 1: "Barrier method", 2: "Projected gradient method", 3: "Legacy"}
     simulation_service_time = np.zeros(4)
     res_a = [[], [], [], []]
     print("-----Data type distribution: ", data_type_dist)
