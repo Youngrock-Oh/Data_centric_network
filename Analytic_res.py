@@ -1,6 +1,5 @@
 from math import sqrt
 import numpy as np
-from numpy.random import uniform
 from KJ import grad_projected
 from JS import barrier_method
 
@@ -71,43 +70,6 @@ def analytic_avg_delay(rates, delta, routing_p, vol_dec):
     return res_sum
 
 
-def uniform_random_network(net_region_width, net_region_height, layer_num, node_num, avg_rate_source_node):
-    """
-    Inputs:
-    net_region_width, net_region_height (km),
-    layer_num: # of layers (int)
-    node_num: # of servers in each layer (list)
-    avg_rate_source_node (float)
-    Construct locations using PPP
-    Construct rates using rate_margin and rate_sigma and uniform distribution
-    Construct routing probability - uniform
-    Outputs: locations, rates, routing probability A
-    """
-    locations = [[] for i in range(layer_num)]
-    # rate parameters
-    rates = [[] for i in range(layer_num)]
-    avg_rate_layer = [[] for i in range(layer_num)]  # avg rate of a server in the layer
-    avg_rate_layer[0] = avg_rate_source_node
-    rate_margin = 0.8
-    rate_sigma = 0.2
-    for i in range(1, layer_num):
-        avg_rate_layer[i] = node_num[i - 1] * avg_rate_layer[i - 1] / node_num[i] / rate_margin
-    # Uniform routing probability A
-    A = [[] for i in range(layer_num)]
-    for i in range(layer_num - 1):
-        A[i] = np.ones((node_num[i], node_num[i + 1])) / node_num[i + 1]
-    A[layer_num - 1] = np.zeros((node_num[layer_num - 1], node_num[layer_num - 1]))
-    # Construct locations, rates
-    for i in range(layer_num):
-        for j in range(node_num[i]):
-            x = uniform(-net_region_width / 2, net_region_width / 2)
-            y = uniform(-net_region_height / 2, net_region_height / 2)
-            rate = uniform(avg_rate_layer[i] * (1. - rate_sigma), avg_rate_layer[i] * (1. + rate_sigma))
-            locations[i].append([x, y])
-            rates[i].append(rate)
-    return [locations, rates, A]
-
-
 def no_delay_optimal(arrival_rates, service_rates):
     '''
     	Find the optimal completion time using Lagrange multiplier for a network without propagation delays
@@ -136,7 +98,7 @@ def cur_vol(cur_layer_index, layer_dic, vol_dec):
     for i in range(data_type_num):
         for j in range(cur_layer_index + 1):
             if layer_dic[i].count(j) > 0:
-                res[i] /= vol_dec[j]
+                res[i] *= vol_dec[i, j]
     return res
 
 
@@ -148,7 +110,7 @@ def effective_rates(arrival_rates, service_rates, cur_layer_index, layer_dic, da
         if layer_dic[i].count(cur_layer_index + 1) > 0:
             effective_dist[i] = data_dist[i]
     eff_arrival_rates = arrival_rates * sum(effective_dist)
-    eff_service_rates = service_rates * (np.dot(data_vol, effective_dist) / sum(effective_dist))
+    eff_service_rates = service_rates * (np.dot(1 / data_vol, effective_dist) / sum(effective_dist))
     return [eff_arrival_rates, eff_service_rates]
 
 
@@ -162,9 +124,12 @@ def grad_multi_layers(rates, delta, layer_dic, data_type_dist, vol_dec):
         eff_rates = effective_rates(temp_arr_rates, temp_ser_rates, l, layer_dic, data_type_dist, vol_dec)
         eff_arr_rates = eff_rates[0]
         eff_ser_rates = eff_rates[1]
-        initial_a = valid_initial_rates(eff_arr_rates, eff_ser_rates, 0.9)
-        temp_res = grad_projected(eff_arr_rates, eff_ser_rates, delta[l], initial_a)
-        temp_a = temp_res['A']
+        if sum(eff_arr_rates) == 0:  # just passing through the layer
+            temp_a = np.ones((len(eff_arr_rates), len(eff_ser_rates))) / len(eff_ser_rates)
+        else:
+            initial_a = valid_initial_rates(eff_arr_rates, eff_ser_rates, 0.9)
+            temp_res = grad_projected(eff_arr_rates, eff_ser_rates, delta[l], initial_a)
+            temp_a = temp_res['A']
         optimal_a.append(temp_a)
         source_rates = np.matmul(source_rates, temp_a)
     last_layer_num = len(rates[layer_num - 2])
@@ -182,9 +147,12 @@ def barrier_multi_layers(rates, delta, layer_dic, data_type_dist, vol_dec):
         eff_rates = effective_rates(temp_arr_rates, temp_ser_rates, l, layer_dic, data_type_dist, vol_dec)
         eff_arr_rates = eff_rates[0]
         eff_ser_rates = eff_rates[1]
-        initial_a = valid_initial_rates(eff_arr_rates, eff_ser_rates, 0.9)
-        temp_res = barrier_method(eff_arr_rates, eff_ser_rates, delta[l], initial_a)
-        temp_a = temp_res['A']
+        if sum(eff_arr_rates) == 0:  # just passing through the layer
+            temp_a = np.ones((len(eff_arr_rates), len(eff_ser_rates))) / len(eff_ser_rates)
+        else:
+            initial_a = valid_initial_rates(eff_arr_rates, eff_ser_rates, 0.9)
+            temp_res = barrier_method(eff_arr_rates, eff_ser_rates, delta[l], initial_a)
+            temp_a = temp_res['A']
         optimal_a.append(temp_a)
         source_rates = np.matmul(source_rates, temp_a)
     last_layer_num = len(rates[layer_num - 2])
@@ -213,7 +181,7 @@ def valid_initial_rates(source_rates, server_rates, para):
 
 def legacy_optimal_routing(locations):
     """
-    :param locations: corrdintates info for spatial distribution of nodes in the network
+    :param locations: coordinates info for spatial distribution of nodes in the network
     :return: a, (list that consists of arrays) the optimal routing probability in the legacy network
     """
     layer_num = len(locations)
@@ -228,36 +196,39 @@ def legacy_optimal_routing(locations):
 
 def bandwidth_efficiency(vol_dec, data_type_dist, layer_dic, source_rates):
     """
-    :param vol_dec: (array), volume decrease ratio after processing in each layer
+    :param vol_dec: (array), volume decrease ratio after processing in each layer for each data type
     :param data_type_dist: (array), data type distribution
     :param layer_dic: (dictionary), required layer info for each data type
     :param source_rates: (array), source rates in the network
     :return: res, bandwidth efficiency which is proportion to the product of rate and data volume
     """
-    layer_num = len(vol_dec)
+    layer_num = np.size(vol_dec, axis=1)
     res = 0
-    data_num = len(data_type_dist)
+    data_type_num = len(data_type_dist)
+    departure_process_rate = sum(source_rates)
     for l in range(layer_num - 1):
-        departure_process_rate = sum(source_rates)
-        temp_dist = np.zeros(data_num)
-        for i in range(data_num):
-            if max(layer_dic[i]) > l:
+        temp_dist = np.zeros(data_type_num)
+        for i in range(data_type_num):
+            temp_max_layer = max(layer_dic[i])
+            if temp_max_layer > l:
                 temp_dist[i] = data_type_dist[i]
-        avg_data_vol = np.dot(1/cur_vol(l, layer_dic, vol_dec), temp_dist)
-        res += departure_process_rate * avg_data_vol
-    return res
+        cur_vol_temp = cur_vol(l, layer_dic, vol_dec)
+        avg_data_vol = np.dot(cur_vol_temp, temp_dist)
+        res += avg_data_vol
+    return departure_process_rate * res
 
 
-def bandwidth_efficiency_compare(data_type_dist, source_rates, vol_dec=np.array([1, 0.8, 0.8, 1])):
+def bandwidth_efficiency_compare(data_type_dist, source_rates, layer_dic, vol_dec):
     """
     :param data_type_dist: (array), data type distribution
     :param source_rates: (array), source rates in the network
-    :param vol_dec: (array), volume decrease ratio after processing in each layer
+    :param layer_dic: (dictionary), required layer info for each data type
+    :param vol_dec: (array), volume decrease ratio after processing in each layer for each data type
     :return: res, ratio of bandwidth usages between in-network processing and legacy networks
     """
-    layer_dic = {0: [0, 1], 1: [0, 2], 2: [0, 1, 2], 3: [0, 1, 2, 3], 4: [0, 3], 5: [0, 2, 3], 6: [0, 1, 3]}
-    layer_num = len(vol_dec)
-    legacy_vol_dec = np.ones(layer_num)
+    data_type_num = len(data_type_dist)
+    layer_num = np.size(vol_dec, axis=1)
+    legacy_vol_dec = np.ones((data_type_num, layer_num))
     legacy_data_type_dist = np.array([1])
     legacy_layer_dic = {0: [0, layer_num - 1]}
     b_e_legacy = bandwidth_efficiency(legacy_vol_dec, legacy_data_type_dist, legacy_layer_dic, source_rates)
@@ -266,24 +237,24 @@ def bandwidth_efficiency_compare(data_type_dist, source_rates, vol_dec=np.array(
     return res
 
 
-def avg_last_layer(data_type_dist):
+def avg_last_layer(data_type_dist, layer_dic):
     """
     :param data_type_dist: (array), data type distribution
+    :param layer_dic: (dictionary), required layer info for each data type
     :return: res, average last layer
     """
-    layer_dic = {0: [0, 1], 1: [0, 2], 2: [0, 1, 2], 3: [0, 1, 2, 3], 4: [0, 3], 5: [0, 2, 3], 6: [0, 1, 3]}
     temp = list(layer_dic.values())
     temp_max = np.array([max(temp[i]) for i in range(len(data_type_dist))])
     res = np.dot(data_type_dist, temp_max)
     return res
 
 
-def avg_sum_required_layer(data_type_dist):
+def avg_sum_required_layer(data_type_dist, layer_dic):
     """
     :param data_type_dist: (array), data type distribution
+    :param layer_dic: (dictionary), required layer info for each data type
     :return: res, expected sum of the required layers
     """
-    layer_dic = {0: [0, 1], 1: [0, 2], 2: [0, 1, 2], 3: [0, 1, 2, 3], 4: [0, 3], 5: [0, 2, 3], 6: [0, 1, 3]}
     temp = list(layer_dic.values())
     temp_sum = np.array([sum(temp[i]) for i in range(len(data_type_dist))])
     res = np.dot(data_type_dist, temp_sum)
