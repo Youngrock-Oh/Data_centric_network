@@ -9,7 +9,7 @@ import copy
 rates_0 = np.array([30 + 20 * (i // 5) for i in range(25)])
 rates_1 = np.array([250 + 100 * (i // 3) for i in range(9)])
 rates_2 = np.array([500, 600, 800, 900])
-rates_3 = np.array([2600])
+rates_3 = np.array([3000])
 rates = [rates_0, rates_1, rates_2, rates_3]
 rates_01 = np.array([25 + 20 * (i // 5) for i in range(25)])
 rates_02 = np.array([27.5 + 20 * (i // 5) for i in range(25)])
@@ -42,9 +42,7 @@ rates10 = [rates_0, rates_1, rates_22, rates_3]
 rates11 = [rates_0, rates_1, rates_23, rates_3]
 rates12 = [rates_0, rates_1, rates_24, rates_3]
 
-rates13 = [rates_0, rates_1, rates_2, np.array([3000])]
-
-rates_set = [rates, rates1, rates2, rates3, rates4, rates5, rates6, rates7, rates8, rates9, rates10, rates11, rates12 ,rates13]
+rates_set = [rates, rates1, rates2, rates3, rates4, rates5, rates6, rates7, rates8, rates9, rates10, rates11, rates12]
 
 # Volume decrement
 task_vol_dec_c = {"T1": 0.5, "T2": 0.5, "T3": 1}
