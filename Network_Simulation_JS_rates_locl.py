@@ -42,7 +42,9 @@ rates10 = [rates_0, rates_1, rates_22, rates_3]
 rates11 = [rates_0, rates_1, rates_23, rates_3]
 rates12 = [rates_0, rates_1, rates_24, rates_3]
 
-rates_set = [rates, rates1, rates2, rates3, rates4, rates5, rates6, rates7, rates8, rates9, rates10, rates11, rates12]
+rates13 = [rates_0, rates_1, rates_2, np.array([3000])]
+
+rates_set = [rates, rates1, rates2, rates3, rates4, rates5, rates6, rates7, rates8, rates9, rates10, rates11, rates12 ,rates13]
 
 # Volume decrement
 task_vol_dec_c = {"T1": 0.5, "T2": 0.5, "T3": 1}
