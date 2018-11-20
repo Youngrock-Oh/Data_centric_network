@@ -17,7 +17,7 @@ loc_3 = [[0, 0]]
 locations_input = [loc_0, loc_1, loc_2, loc_3]
 # data and task configuration
 data_task_c = {0: ["T1"], 1: ["T2"], 2: ["T1", "T2"], 3: ["T1", "T2", "T3"], 4: ["T3"], 5: ["T2", "T3"], 6: ["T1", "T3"]}
-task_vol_dec_c = {"T1": 0.8, "T2": 0.8, "T3": 1}
+task_vol_dec_c = {"T1": 0.5, "T2": 0.5, "T3": 1}
 data_type_dist_set = np.zeros((8, 7))
 data_type_dist_set[0, :] = 1 / 7 * np.ones(7)
 data_type_dist_set[1, :] = np.array([1/3, 1/6, 1/6, 1/12, 1/12, 1/12, 1/12])
