@@ -8,7 +8,7 @@ import random
 # Written by KJ
 def grad_projected(arrival_rates, service_rates, delta, initial_a):
     prsc = 'float64'
-    N = 100000
+    N = 50000
     ep = 0.00000000001
     gamma = 0.01
     # parameter end

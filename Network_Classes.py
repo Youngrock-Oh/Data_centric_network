@@ -193,7 +193,10 @@ class Medium:  # Class "Medium": corresponding to the transmission events
                 self.data_stack[i][0].spending_time += close_service_time
 
 
-def network_simulation(rates, locations, data_type_dist, vol_dec, layer_dic):
+def network_simulation(rates, locations, data_type_dist, data_task, task_vol_dec, layer_task):
+    temp = task_convert_input(data_task, task_vol_dec, layer_task)
+    vol_dec = temp[0]
+    layer_dic = temp[2]
     start_time = time.time()
     result1 = np.array([])
     result2 = np.zeros((len(data_type_dist), 0))
@@ -218,14 +221,13 @@ def network_simulation(rates, locations, data_type_dist, vol_dec, layer_dic):
             res_a[case_num] = ar.grad_multi_layers(rates, delta, layer_dic, data_type_dist, vol_dec)
         else:
             res_a[case_num] = ar.legacy_optimal_routing(locations)
-            vol_dec = np.ones((1, len(rates)))
-            layer_dic = {0: [0, len(rates) - 1]}
+            layer_task_legacy = {0: [], 1: [], 2: [], 3: ["T1", "T2", "T3"]}
+            temp = task_convert_input(data_task, task_vol_dec, layer_task_legacy)
+            vol_dec = temp[0]
+            layer_dic = temp[2]
 
         A_2 = res_a[case_num] + [np.zeros((len(rates[-2]), 1))]
-        if case_num == 3:
-            cur_network = Network(rates, np.array([1]), layer_dic, delta_2, A_2, vol_dec)
-        else:
-            cur_network = Network(rates, data_type_dist, layer_dic, delta_2, A_2, vol_dec)
+        cur_network = Network(rates, data_type_dist, layer_dic, delta_2, A_2, vol_dec)
         cur_time = 0
         while cur_time < simulation_time:
             close_event_info = cur_network.update_time()
