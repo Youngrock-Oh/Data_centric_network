@@ -8,7 +8,7 @@ data_types = np.zeros((7, 3, 0))
 rates_0 = np.array([30 + 20 * (i // 5) for i in range(25)])
 rates_1 = np.array([250 + 100 * (i // 3) for i in range(9)])
 rates_2 = np.array([500, 600, 800, 900])
-rates_3 = np.array([3000])
+rates_3 = np.array([2900])
 rates_c = [rates_0, rates_1, rates_2, rates_3]
 loc_0 = [[-12 + 6 * i, -12 + 6 * j] for i in range(5) for j in range(5)]
 loc_1 = [[-8 + 8 * i, -8 + 8 * j] for i in range(3) for j in range(3)]
@@ -29,10 +29,10 @@ layer_task_c = {0: [], 1: ["T1"], 2: ["T2"], 3: ["T3"]}
 res = NC.task_convert_input(data_task_c, task_vol_dec_c, layer_task_c)
 vol_dec_input = res[1]
 layer_dic_input = res[2]
-index = 1
 data_bandwidth_efficiency = np.zeros((2, 0))
-for data_type_dist_c in data_type_dist_set:
-    print("Case %d" % index)
+for case_index in range(len(data_type_dist_set)):
+    print("Case %d" % case_index)
+    data_type_dist_c = data_type_dist_set[case_index]
     result = NC.network_simulation(rates_c, locations_c, data_type_dist_c, data_task_c, task_vol_dec_c, layer_task_c)
     temp_data_info = data_type_dist_c.__str__() + "\n"
     temp_b_e = ar.bandwidth_efficiency_compare(data_type_dist_c, rates_0, layer_dic_input, vol_dec_input)
@@ -42,7 +42,6 @@ for data_type_dist_c in data_type_dist_set:
     data_total = np.append(data_total, result[0], axis=1)
     data_types = np.append(data_types, result[1], axis=2)
     f1.write(temp_data_info)
-    index += 1
 
 f1.close()
 np.save('Bandwidth_efficiency_2.npy', data_bandwidth_efficiency)

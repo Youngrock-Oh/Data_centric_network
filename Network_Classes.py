@@ -207,7 +207,8 @@ def network_simulation(rates, locations, data_type_dist, data_task, task_vol_dec
                  range(len(rates) - 1)]
     delta_2 = delta + [np.zeros(1)]
     simulation_time = 100  # sec
-    simulation_cases = {0: "Uniform routing", 1: "Barrier method", 2: "Projected gradient method", 3: "Legacy"}
+    # simulation_cases = {0: "Uniform routing", 1: "Barrier method", 2: "Projected gradient method", 3: "Legacy"}
+    simulation_cases = {3: "Legacy"}
     simulation_service_time = np.zeros(4)
     res_a = [[], [], [], []]
     print("-----Data type distribution: ", data_type_dist)
@@ -267,11 +268,15 @@ def task_convert_input(data_task, task_vol_dec, layer_task):
     temp_rate_factor = np.ones((data_num, layer_num))
     layer_dic = {}
     for i in range(data_num):
-        temp_task_set = set(data_task[i])
+        temp_task_set = data_task[i]
         temp_layer_set = [0]
         for l in range(1, layer_num):
-            temp_layer_task_set = set(layer_task[l])
-            processing_task_set = temp_layer_task_set & temp_task_set
+            temp_layer_task_set = layer_task[l]
+            processing_task_set = []
+            for temp_item in temp_layer_task_set:
+                if temp_item in temp_task_set:
+                    processing_task_set.append(temp_item)
+
             if processing_task_set:
                 temp_layer_set.append(l)
                 temp_vol_dec_set = []
