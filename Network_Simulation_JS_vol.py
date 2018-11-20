@@ -6,7 +6,7 @@ import Analytic_res as ar
 rates_0 = np.array([30 + 20 * (i // 5) for i in range(25)])
 rates_1 = np.array([250 + 100 * (i // 3) for i in range(9)])
 rates_2 = np.array([500, 600, 800, 900])
-rates_3 = np.array([2900])
+rates_3 = np.array([2600])
 rates = [rates_0, rates_1, rates_2, rates_3]
 
 # Volume decrement
