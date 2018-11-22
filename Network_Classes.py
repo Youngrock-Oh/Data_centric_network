@@ -221,7 +221,11 @@ def network_simulation(rates, locations, data_type_dist, data_task, task_vol_dec
             res_a[case_num] = ar.grad_multi_layers(rates, delta, layer_dic, data_type_dist, vol_dec)
         else:
             res_a[case_num] = ar.legacy_optimal_routing(locations)
-            layer_task_legacy = {0: [], 1: [], 2: [], 3: ["T1", "T2", "T3"]}
+            main_server_task = data_task[len(data_type_dist) - 1]
+            layer_task_legacy = {0: []}
+            for i in range(len(rates)):
+                layer_task_legacy[i] = []
+            layer_task_legacy[len(rates) - 1] = main_server_task
             temp = task_convert_input(data_task, task_vol_dec, layer_task_legacy)
             vol_dec = temp[0]
             layer_dic = temp[2]
