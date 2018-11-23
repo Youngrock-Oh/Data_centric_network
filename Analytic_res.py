@@ -97,8 +97,7 @@ def cur_vol(cur_layer_index, layer_dic, vol_dec):
     res = np.ones(data_type_num)
     for i in range(data_type_num):
         for j in range(cur_layer_index + 1):
-            if layer_dic[i].count(j) > 0:
-                res[i] *= vol_dec[i, j]
+            res[i] *= vol_dec[i, j]
     return res
 
 
@@ -110,7 +109,7 @@ def effective_rates(arrival_rates, service_rates, cur_layer_index, layer_dic, da
         if layer_dic[i].count(cur_layer_index + 1) > 0:
             effective_dist[i] = data_dist[i]
     eff_arrival_rates = arrival_rates * sum(effective_dist)
-    eff_service_rates = service_rates * (np.dot(1 / data_vol, effective_dist) / sum(effective_dist))
+    eff_service_rates = service_rates / (np.dot(data_vol, effective_dist) / sum(effective_dist))
     return [eff_arrival_rates, eff_service_rates]
 
 
